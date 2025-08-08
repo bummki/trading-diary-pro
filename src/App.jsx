@@ -17,6 +17,8 @@ import { TradingJournal } from './components/TradingJournal'
 import { useI18n } from './hooks/useI18n'
 import './App.css'
 
+import Footer from './components/Footer'
+
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [showAlertForm, setShowAlertForm] = useState(false)
@@ -336,6 +338,9 @@ function App() {
           <NotificationSettings />
         </DialogContent>
       </Dialog>
+
+      {/* 푸터 */}
+      <Footer />
     </div>
   )
 }

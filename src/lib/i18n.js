@@ -70,7 +70,16 @@ const translations = {
     trades: {
       title: '거래 내역',
       description: '모든 거래 내역을 관리하세요',
-      comingSoon: '거래 내역 기능은 곧 추가될 예정입니다.'
+      comingSoon: '거래 내역 기능은 곧 추가될 예정입니다.',
+      noTrades: '아직 거래 기록이 없습니다',
+      noTradesDesc: '첫 번째 거래를 추가해보세요',
+      justNow: '방금 전',
+      minutesAgo: '분 전',
+      hoursAgo: '시간 전',
+      daysAgo: '일 전',
+      weeksAgo: '주 전',
+      monthsAgo: '개월 전',
+      yearsAgo: '년 전'
     },
     
     // 코인 알람
@@ -158,6 +167,27 @@ const translations = {
       targetPrice: '목표 가격',
       testNotification: '테스트 알림',
       testNotificationBody: '알림이 정상적으로 작동합니다!'
+    },
+
+    // 푸터
+    footer: {
+      description: '전문적인 매매일지 작성과 실시간 코인 가격 알람을 한 곳에서 관리하세요. 투자 성과를 체계적으로 기록하고 분석하여 더 나은 투자 결정을 내릴 수 있습니다.',
+      features: '주요 기능',
+      tradingJournal: '매매일지 관리',
+      cryptoAlerts: '코인 가격 알람',
+      realTimePrice: '실시간 가격 모니터링',
+      csvExport: 'CSV 내보내기/가져오기',
+      multiLanguage: '다국어 지원',
+      howToUse: '사용 방법',
+      step1: '거래 내역을 추가하여 포트폴리오를 구성하세요',
+      step2: '코인 가격 알람을 설정하여 기회를 놓치지 마세요',
+      step3: '매매 기법과 상세한 메모로 투자 패턴을 분석하세요',
+      step4: 'CSV 기능으로 데이터를 백업하고 관리하세요',
+      aboutService: '서비스 소개',
+      seoDescription: 'TradingDiaryPro는 개인 투자자를 위한 올인원 투자 관리 플랫폼입니다. 매매일지 작성, 코인 가격 알람, 실시간 시장 데이터 모니터링 기능을 제공하여 체계적인 투자 관리를 도와드립니다.',
+      keywords: '주요 키워드',
+      keywordsList: '매매일지, 투자일기, 코인알람, 암호화폐, 비트코인, 이더리움, 투자관리, 포트폴리오, 주식투자, 가격알림, 실시간차트, 투자분석, 수익률계산, 매매기록',
+      copyright: '모든 권리 보유.'
     }
   },
   
@@ -219,7 +249,16 @@ const translations = {
     trades: {
       title: 'Trading History',
       description: 'Manage all your trading records',
-      comingSoon: 'Trading history feature coming soon.'
+      comingSoon: 'Trading history feature coming soon.',
+      noTrades: 'No trading records yet',
+      noTradesDesc: 'Add your first trade',
+      justNow: 'just now',
+      minutesAgo: 'minutes ago',
+      hoursAgo: 'hours ago',
+      daysAgo: 'days ago',
+      weeksAgo: 'weeks ago',
+      monthsAgo: 'months ago',
+      yearsAgo: 'years ago'
     },
     
     // 코인 알람
@@ -307,6 +346,27 @@ const translations = {
       targetPrice: 'Target Price',
       testNotification: 'Test Notification',
       testNotificationBody: 'Notifications are working properly!'
+    },
+
+    // 푸터
+    footer: {
+      description: 'Manage professional trading journals and real-time crypto price alerts in one place. Record and analyze your investment performance systematically to make better investment decisions.',
+      features: 'Key Features',
+      tradingJournal: 'Trading Journal Management',
+      cryptoAlerts: 'Crypto Price Alerts',
+      realTimePrice: 'Real-time Price Monitoring',
+      csvExport: 'CSV Export/Import',
+      multiLanguage: 'Multi-language Support',
+      howToUse: 'How to Use',
+      step1: 'Add trading records to build your portfolio',
+      step2: 'Set crypto price alerts to never miss opportunities',
+      step3: 'Analyze investment patterns with trading strategies and detailed notes',
+      step4: 'Backup and manage data with CSV functionality',
+      aboutService: 'About Service',
+      seoDescription: 'TradingDiaryPro is an all-in-one investment management platform for individual investors. It provides trading journal creation, crypto price alerts, and real-time market data monitoring to help systematic investment management.',
+      keywords: 'Keywords',
+      keywordsList: 'trading journal, investment diary, crypto alerts, cryptocurrency, bitcoin, ethereum, investment management, portfolio, stock trading, price alerts, real-time charts, investment analysis, profit calculation, trading records',
+      copyright: 'All rights reserved.'
     }
   },
   
@@ -368,7 +428,16 @@ const translations = {
     trades: {
       title: '交易历史',
       description: '管理您的所有交易记录',
-      comingSoon: '交易历史功能即将推出。'
+      comingSoon: '交易历史功能即将推出。',
+      noTrades: '暂无交易记录',
+      noTradesDesc: '添加您的第一笔交易',
+      justNow: '刚刚',
+      minutesAgo: '分钟前',
+      hoursAgo: '小时前',
+      daysAgo: '天前',
+      weeksAgo: '周前',
+      monthsAgo: '个月前',
+      yearsAgo: '年前'
     },
     
     // 코인 알람
@@ -456,6 +525,27 @@ const translations = {
       targetPrice: '目标价格',
       testNotification: '测试通知',
       testNotificationBody: '通知正常工作！'
+    },
+
+    // 푸터
+    footer: {
+      description: '在一个地方管理专业的交易日志和实时加密货币价格警报。系统地记录和分析您的投资表现，做出更好的投资决策。',
+      features: '主要功能',
+      tradingJournal: '交易日志管理',
+      cryptoAlerts: '加密货币价格警报',
+      realTimePrice: '实时价格监控',
+      csvExport: 'CSV导出/导入',
+      multiLanguage: '多语言支持',
+      howToUse: '使用方法',
+      step1: '添加交易记录构建您的投资组合',
+      step2: '设置加密货币价格警报，不错过机会',
+      step3: '通过交易策略和详细笔记分析投资模式',
+      step4: '使用CSV功能备份和管理数据',
+      aboutService: '关于服务',
+      seoDescription: 'TradingDiaryPro是为个人投资者打造的一体化投资管理平台。提供交易日志创建、加密货币价格警报和实时市场数据监控，帮助系统化投资管理。',
+      keywords: '关键词',
+      keywordsList: '交易日志, 投资日记, 加密货币警报, 加密货币, 比特币, 以太坊, 投资管理, 投资组合, 股票交易, 价格警报, 实时图表, 投资分析, 利润计算, 交易记录',
+      copyright: '版权所有。'
     }
   },
   
@@ -517,7 +607,16 @@ const translations = {
     trades: {
       title: '取引履歴',
       description: 'すべての取引記録を管理',
-      comingSoon: '取引履歴機能は近日公開予定です。'
+      comingSoon: '取引履歴機能は近日公開予定です。',
+      noTrades: '取引記録がありません',
+      noTradesDesc: '最初の取引を追加してください',
+      justNow: 'たった今',
+      minutesAgo: '分前',
+      hoursAgo: '時間前',
+      daysAgo: '日前',
+      weeksAgo: '週間前',
+      monthsAgo: 'ヶ月前',
+      yearsAgo: '年前'
     },
     
     // 코인 알람
@@ -605,6 +704,27 @@ const translations = {
       targetPrice: '目標価格',
       testNotification: 'テスト通知',
       testNotificationBody: '通知が正常に動作しています！'
+    },
+
+    // 푸터
+    footer: {
+      description: 'プロフェッショナルな取引日記とリアルタイム暗号通貨価格アラートを一箇所で管理。投資パフォーマンスを体系的に記録・分析し、より良い投資判断を行えます。',
+      features: '主要機能',
+      tradingJournal: '取引日記管理',
+      cryptoAlerts: '暗号通貨価格アラート',
+      realTimePrice: 'リアルタイム価格監視',
+      csvExport: 'CSVエクスポート/インポート',
+      multiLanguage: '多言語サポート',
+      howToUse: '使用方法',
+      step1: '取引記録を追加してポートフォリオを構築',
+      step2: '暗号通貨価格アラートを設定して機会を逃さない',
+      step3: '取引戦略と詳細なメモで投資パターンを分析',
+      step4: 'CSV機能でデータをバックアップ・管理',
+      aboutService: 'サービスについて',
+      seoDescription: 'TradingDiaryProは個人投資家向けのオールインワン投資管理プラットフォームです。取引日記作成、暗号通貨価格アラート、リアルタイム市場データ監視機能を提供し、体系的な投資管理をサポートします。',
+      keywords: 'キーワード',
+      keywordsList: '取引日記, 投資日記, 暗号通貨アラート, 暗号通貨, ビットコイン, イーサリアム, 投資管理, ポートフォリオ, 株式取引, 価格アラート, リアルタイムチャート, 投資分析, 利益計算, 取引記録',
+      copyright: '全著作権所有。'
     }
   }
 }
