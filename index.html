@@ -257,16 +257,14 @@
         border: 1px solid var(--border);
         border-radius: 12px;
         padding: 0.5rem 0.75rem;
-        margin-right: 0.5rem;
         color: var(--fg);
         font-weight: 600;
         transition: background 0.2s, color 0.2s, border-color 0.2s;
       }
-      /* 마지막 탭은 오른쪽 여백을 없애 균일한 간격을 유지 */
-      [role='tab']:last-child,
-      .tab:last-child,
-      .nav-tab:last-child {
-        margin-right: 0;
+      /* 탭 컨테이너에 간격을 주어 각 탭 사이의 여백을 균등하게 만듭니다. */
+      [role='tablist'] {
+        display: flex;
+        gap: 0.5rem;
       }
       /* 탭 활성화(선택) 상태 */
       [role='tab'][aria-selected='true'],
@@ -416,15 +414,8 @@
           padding: 0.5rem 0.25rem !important;
           overflow: hidden !important;
           text-overflow: ellipsis !important;
-          /* 모바일에서는 간격과 라운드를 줄여 UI가 조밀해지도록 조정 */
-          margin-right: 0.25rem !important;
+          /* 모바일에서는 라운드 크기만 줄여 UI가 조밀해지도록 조정 */
           border-radius: 10px !important;
-        }
-        /* 마지막 탭의 여백 제거 (모바일용) */
-        [role='tab']:last-child,
-        .nav-tab:last-child,
-        .tab:last-child {
-          margin-right: 0 !important;
         }
         .flex,
         [class*='flex'] {
