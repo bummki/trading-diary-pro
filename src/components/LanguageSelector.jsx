@@ -1,41 +1,36 @@
-import { Button } from '@/components/ui/button.jsx'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu.jsx'
 import { Globe } from 'lucide-react'
 import { useLanguageSelector } from '../hooks/useI18n'
 
+/**
+ * A simplified language selector that uses a native `<select>` element instead of a
+ * dropdown menu. The previous implementation relied on a custom dropdown
+ * component which rendered an additional arrow element that overlapped the
+ * selected value in dark mode. By using a standard `<select>` wrapped in a
+ * container with custom styles, we remove the extra overlay and ensure the
+ * selected language and flag are clearly visible in both light and dark
+ * themes. See the accompanying CSS in `index.html` for `.lang-wrap` and
+ * `.lang-select` definitions, which hide the default arrow and add a
+ * custom triangle icon via a pseudo‑element.
+ */
 export function LanguageSelector() {
   const { currentLanguage, languageOptions, changeLanguage } = useLanguageSelector()
 
-  const currentLangOption = languageOptions.find(option => option.value === currentLanguage)
-
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-8 px-2">
-          <Globe className="h-4 w-4 mr-1" />
-          <span className="hidden sm:inline">{currentLangOption?.flag}</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
-        {languageOptions.map((option) => (
-          <DropdownMenuItem
-            key={option.value}
-            onClick={() => changeLanguage(option.value)}
-            className={`cursor-pointer ${
-              option.value === currentLanguage ? 'bg-accent' : ''
-            }`}
-          >
-            <span className="mr-2">{option.flag}</span>
-            <span>{option.name}</span>
-          </DropdownMenuItem>
+    <div className="lang-wrap">
+      {/* Globe icon indicates language selection; aria-hidden so screen readers skip it */}
+      <Globe className="h-4 w-4 mr-1" aria-hidden="true" />
+      <select
+        className="lang-select"
+        value={currentLanguage}
+        onChange={(e) => changeLanguage(e.target.value)}
+        aria-label="언어 선택"
+      >
+        {languageOptions.map(({ value, flag }) => (
+          <option key={value} value={value}>
+            {flag} {value.toUpperCase()}
+          </option>
         ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </select>
+    </div>
   )
 }
-
