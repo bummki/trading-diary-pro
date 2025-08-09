@@ -305,6 +305,60 @@
         border-top-color: var(--fg);
       }
 
+      /*
+       * Responsive adjustments for dashboard stats cards. On very small screens
+       * the default font sizes used in the dashboard can cause text wrapping or
+       * overflow, which makes the cards appear misaligned or broken. These
+       * rules scale down the font sizes and adjust the minimum width of each
+       * grid column to maintain a consistent layout across different device
+       * widths. See user feedback indicating that the cards looked broken due
+       * to large fonts on mobile.  We clamp the font sizes so that they stay
+       * readable on larger screens while shrinking on smaller screens.
+       */
+      .stats-grid,
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      }
+      .stats-value {
+        /* Dynamically scale number font sizes based on viewport width */
+        font-size: clamp(0.75rem, 1.5vw + 0.6rem, 1rem) !important;
+        font-weight: 700;
+      }
+      .stats-label {
+        /* Scale label fonts slightly smaller to allow more room for numbers */
+        font-size: clamp(0.55rem, 1.2vw + 0.3rem, 0.75rem) !important;
+        opacity: 0.7;
+      }
+      .stats-card,
+      .dashboard-card {
+        /* Prevent long values from overflowing card boundaries */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      @media (max-width: 768px) {
+        .stats-grid,
+        .dashboard-grid {
+          /* Reduce minimum column width on tablets */
+          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        }
+      }
+      @media (max-width: 375px) {
+        .stats-grid,
+        .dashboard-grid {
+          /* Further reduce column width on small phones */
+          grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        }
+      }
+      @media (max-width: 320px) {
+        .stats-grid,
+        .dashboard-grid {
+          /* Minimum width for extra small phones */
+          grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+        }
+      }
+
       /* ===== 반응형: 모바일 최적화 ===== */
       @media (max-width: 768px) {
         button {
