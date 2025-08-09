@@ -1,27 +1,69 @@
-/* 추가된 내비게이션 탭 카드 스타일
- *
- * 기존 프로젝트의 모바일 전용 CSS(`App.css` 또는 `improved-mobile-fix.css`)를 유지하면서
- * 상단 탭(대시보드/거래 내역/코인 알람/분석)을 이미지 버튼처럼 카드 형태로 꾸미기 위한
- * 보조 스타일입니다. 이 파일을 프로젝트에 임포트하면 각 탭은 카드 배경과 테두리를 갖추고,
- * 활성화된 탭은 강조 색상으로 표시됩니다. 다른 레이아웃 속성(display, grid/flex 등)은 그대로
- * 유지되므로 기존 CSS와 충돌하지 않습니다.
- */
+/* =======================================================================
+ * nav-card-style.css — DESIGN ONLY
+ * - 상단 탭(대시보드/거래 내역/코인 알람/분석)을 카드형 버튼처럼 꾸밈
+ * - 배치, 크기, 그리드 등 레이아웃 관련 속성은 절대 포함하지 않음
+ * - 다크 모드 대비 색상 포함
+ * ======================================================================= */
 
-/* 기본 탭을 카드처럼 보이게 */
+/* 기본 탭: 카드 느낌 */
 [role="tab"] {
-    border: 1px solid var(--border);
-    background: var(--card);
-    border-radius: 0.75rem;
-    padding: 0.5rem 0.75rem;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  border: 1px solid var(--border, #e2e8f0);
+  background: var(--card, #f8fafc);
+  color: var(--fg, #0b1220);
+  border-radius: 12px;
+  font-weight: 700;
+  transition: transform .15s ease, background .15s ease, color .15s ease, border-color .15s ease;
 }
 
-/* 활성 탭은 강조 색상 사용 */
+/* hover 효과 */
+[role="tab"]:hover {
+  border-color: color-mix(in oklab, var(--border, #e2e8f0) 40%, var(--fg, #0b1220));
+  transform: translateY(-1px);
+}
+
+/* active 클릭 순간 효과 */
+[role="tab"]:active {
+  transform: translateY(0);
+}
+
+/* 활성 탭 */
 [role="tab"][aria-selected="true"],
 [role="tab"][data-state="active"] {
-    background: var(--primary);
-    color: var(--on-primary);
+  background: var(--primary, #2563eb);
+  border-color: var(--primary, #2563eb);
+  color: var(--on-primary, #ffffff);
+}
+
+/* 다크 모드 */
+.dark [role="tab"] {
+  background: var(--card, #0f172a);
+  color: var(--fg, #e6edf3);
+  border-color: var(--border, #1f2937);
+}
+.dark [role="tab"][aria-selected="true"],
+.dark [role="tab"][data-state="active"] {
+  background: var(--primary, #3b82f6);
+  border-color: var(--primary, #3b82f6);
+  color: var(--on-primary, #ffffff);
+}
+
+/* 모바일 폰트/라운드 조정 (치수만, 배치는 App.css가 함) */
+@media (max-width: 768px) {
+  [role="tab"] {
+    border-radius: 10px;
+    font-size: 0.75rem;
+    padding: 0.45rem 0.5rem;
+  }
+}
+@media (max-width: 375px) {
+  [role="tab"] {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.45rem;
+  }
+}
+@media (max-width: 320px) {
+  [role="tab"] {
+    font-size: 0.65rem;
+    padding: 0.35rem 0.4rem;
+  }
 }
