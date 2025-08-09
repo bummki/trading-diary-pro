@@ -1,0 +1,27 @@
+/* 추가된 내비게이션 탭 카드 스타일
+ *
+ * 기존 프로젝트의 모바일 전용 CSS(`App.css` 또는 `improved-mobile-fix.css`)를 유지하면서
+ * 상단 탭(대시보드/거래 내역/코인 알람/분석)을 이미지 버튼처럼 카드 형태로 꾸미기 위한
+ * 보조 스타일입니다. 이 파일을 프로젝트에 임포트하면 각 탭은 카드 배경과 테두리를 갖추고,
+ * 활성화된 탭은 강조 색상으로 표시됩니다. 다른 레이아웃 속성(display, grid/flex 등)은 그대로
+ * 유지되므로 기존 CSS와 충돌하지 않습니다.
+ */
+
+/* 기본 탭을 카드처럼 보이게 */
+[role="tab"] {
+    border: 1px solid var(--border);
+    background: var(--card);
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 활성 탭은 강조 색상 사용 */
+[role="tab"][aria-selected="true"],
+[role="tab"][data-state="active"] {
+    background: var(--primary);
+    color: var(--on-primary);
+}
