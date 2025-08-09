@@ -1,150 +1,136 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 
-// CoinGecko API 기본 URL
-const COINGECKO_API_BASE = 'https://api.coingecko.com/api/v3'
+// Binance API base URL
+const BINANCE_API_BASE = 'https://api.binance.com/api/v3'
 
-// 인기 코인 목록
+// List of popular coins supported by the app.
+// The `id` property corresponds to the internal identifier used throughout the app.
+// The `symbol` property holds the short ticker symbol of the asset (without currency suffix).
 export const POPULAR_COINS = [
-  { id: 'bitcoin', symbol: 'btc', name: 'Bitcoin' },
-  { id: 'ethereum', symbol: 'eth', name: 'Ethereum' },
-  { id: 'ripple', symbol: 'xrp', name: 'XRP' },
-  { id: 'dogecoin', symbol: 'doge', name: 'Dogecoin' },
-  { id: 'cardano', symbol: 'ada', name: 'Cardano' },
-  { id: 'solana', symbol: 'sol', name: 'Solana' },
-  { id: 'polkadot', symbol: 'dot', name: 'Polkadot' },
+  { id: 'bitcoin',   symbol: 'btc',  name: 'Bitcoin' },
+  { id: 'ethereum',  symbol: 'eth',  name: 'Ethereum' },
+  { id: 'ripple',    symbol: 'xrp',  name: 'XRP' },
+  { id: 'dogecoin',  symbol: 'doge', name: 'Dogecoin' },
+  { id: 'cardano',   symbol: 'ada',  name: 'Cardano' },
+  { id: 'solana',    symbol: 'sol',  name: 'Solana' },
+  { id: 'polkadot',  symbol: 'dot',  name: 'Polkadot' },
   { id: 'chainlink', symbol: 'link', name: 'Chainlink' },
-  { id: 'litecoin', symbol: 'ltc', name: 'Litecoin' },
-  { id: 'binancecoin', symbol: 'bnb', name: 'BNB' }
+  { id: 'litecoin',  symbol: 'ltc',  name: 'Litecoin' },
+  { id: 'binancecoin', symbol: 'bnb', name: 'BNB' },
 ]
 
-// 지원되는 통화 목록
+// Supported currencies. Binance provides prices in quote assets (e.g. USDT),
+// so we expose USD as the only supported fiat currency here.  If additional
+// currency conversion is needed (e.g. KRW), conversions should be handled
+// externally via a separate FX API.
 export const SUPPORTED_CURRENCIES = [
   { id: 'usd', name: 'USD', symbol: '$' },
-  { id: 'krw', name: 'KRW', symbol: '₩' },
-  { id: 'eur', name: 'EUR', symbol: '€' },
-  { id: 'jpy', name: 'JPY', symbol: '¥' }
 ]
 
 /**
- * CoinGecko API를 사용하여 코인 가격을 가져오는 커스텀 훅
+ * Hook to fetch and manage cryptocurrency prices using Binance REST API.
+ *
+ * The Binance API returns prices quoted against USDT. For each requested coin,
+ * this hook fetches the 24‑hour ticker data via the `/api/v3/ticker/24hr` endpoint.
+ * It then extracts the last traded price and 24‑hour price change percentage.
+ *
+ * Prices are stored under the coin's `id` with a nested object containing
+ * `usd` for the price and `usd_24h_change` for the 24‑hour percentage change.
+ * A `last_updated_at` field (Unix timestamp in seconds) is included to aid
+ * consumers in showing when the data was refreshed.
  */
 export const useCoinPrices = () => {
   const [prices, setPrices] = useState({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  /**
-   * 특정 코인들의 가격을 가져오는 함수
-   * @param {string[]} coinIds - 코인 ID 배열
-   * @param {string[]} currencies - 통화 배열
-   * @param {boolean} includeChange - 24시간 변동률 포함 여부
-   */
-  const fetchPrices = useCallback(async (coinIds, currencies = ['usd'], includeChange = true) => {
-    if (!coinIds || coinIds.length === 0) return
+  // Map a coin ID to its Binance trading pair (e.g. 'btc' → 'BTCUSDT')
+  const mapCoinIdToBinanceSymbol = useCallback((coinId) => {
+    const coin = POPULAR_COINS.find((c) => c.id === coinId)
+    if (!coin) return null
+    return `${coin.symbol.toUpperCase()}USDT`
+  }, [])
 
-    setLoading(true)
-    setError(null)
-
-    try {
-      const params = new URLSearchParams({
-        ids: coinIds.join(','),
-        vs_currencies: currencies.join(','),
-        include_24hr_change: includeChange.toString(),
-        include_last_updated_at: 'true'
-      })
-
-      const response = await fetch(`${COINGECKO_API_BASE}/simple/price?${params}`)
-      
-      if (!response.ok) {
-        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`)
-      }
-
-      const data = await response.json()
-      
-      // 가격 데이터를 상태에 업데이트
-      setPrices(prevPrices => ({
-        ...prevPrices,
-        ...data
-      }))
-
-      return data
-    } catch (err) {
-      console.error('코인 가격 가져오기 실패:', err)
-      setError(err.message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
+  // Inverse: map a Binance symbol back to the internal coin ID
+  const mapSymbolToCoinId = useCallback((symbol) => {
+    const base = symbol.replace(/USDT$/, '').toLowerCase()
+    const coin = POPULAR_COINS.find((c) => c.symbol.toLowerCase() === base)
+    return coin ? coin.id : null
   }, [])
 
   /**
-   * 단일 코인의 가격을 가져오는 함수
-   * @param {string} coinId - 코인 ID
-   * @param {string} currency - 통화
+   * Fetch prices for an array of coin IDs.  This function will
+   * request data for all provided coins in one API call by constructing
+   * a list of Binance symbols.  The API returns an array of ticker objects
+   * containing price, price change, and timestamps.
+   *
+   * @param {string[]} coinIds Array of coin IDs to fetch
    */
-  const fetchSinglePrice = useCallback(async (coinId, currency = 'usd') => {
-    return fetchPrices([coinId], [currency])
-  }, [fetchPrices])
+  const fetchPrices = useCallback(
+    async (coinIds = []) => {
+      if (!coinIds || coinIds.length === 0) return
+      setLoading(true)
+      setError(null)
+      try {
+        // Build the list of Binance symbols from the coin IDs
+        const symbols = coinIds.map((id) => mapCoinIdToBinanceSymbol(id)).filter(Boolean)
+        if (symbols.length === 0) return
 
-  /**
-   * 코인 목록을 가져오는 함수
-   */
-  const fetchCoinsList = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const response = await fetch(`${COINGECKO_API_BASE}/coins/list`)
-      
-      if (!response.ok) {
-        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`)
+        // Encode the symbols array as a JSON string for the URL parameter
+        const symbolsParam = encodeURIComponent(JSON.stringify(symbols))
+        const url = `${BINANCE_API_BASE}/ticker/24hr?symbols=${symbolsParam}`
+        const response = await fetch(url)
+        if (!response.ok) {
+          throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`)
+        }
+        const data = await response.json()
+        // The API returns either an array or an object; normalize to array
+        const items = Array.isArray(data) ? data : [data]
+        const updated = {}
+        items.forEach((item) => {
+          const coinId = mapSymbolToCoinId(item.symbol)
+          if (!coinId) return
+          const price = parseFloat(item.lastPrice)
+          const changePercent = parseFloat(item.priceChangePercent)
+          // Binance provides closeTime in milliseconds; convert to seconds
+          const lastUpdated = item.closeTime
+            ? Math.floor(item.closeTime / 1000)
+            : Math.floor(Date.now() / 1000)
+          updated[coinId] = {
+            usd: price,
+            usd_24h_change: changePercent,
+            last_updated_at: lastUpdated,
+          }
+        })
+        setPrices((prev) => ({ ...prev, ...updated }))
+        return updated
+      } catch (err) {
+        console.error('코인 가격 가져오기 실패:', err)
+        setError(err.message)
+        throw err
+      } finally {
+        setLoading(false)
       }
+    },
+    [mapCoinIdToBinanceSymbol, mapSymbolToCoinId],
+  )
 
-      const data = await response.json()
-      return data
-    } catch (err) {
-      console.error('코인 목록 가져오기 실패:', err)
-      setError(err.message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  /** Fetch the price for a single coin by delegating to fetchPrices */
+  const fetchSinglePrice = useCallback((coinId) => fetchPrices([coinId]), [fetchPrices])
 
-  /**
-   * 특정 코인의 현재 가격을 반환하는 함수
-   * @param {string} coinId - 코인 ID
-   * @param {string} currency - 통화
-   */
-  const getPrice = useCallback((coinId, currency = 'usd') => {
-    const coinData = prices[coinId]
-    if (!coinData) return null
+  /** Return the static list of supported coins */
+  const fetchCoinsList = useCallback(async () => POPULAR_COINS, [])
 
-    return coinData[currency] || null
-  }, [prices])
-
-  /**
-   * 특정 코인의 24시간 변동률을 반환하는 함수
-   * @param {string} coinId - 코인 ID
-   * @param {string} currency - 통화
-   */
-  const getChange24h = useCallback((coinId, currency = 'usd') => {
-    const coinData = prices[coinId]
-    if (!coinData) return null
-
-    return coinData[`${currency}_24h_change`] || null
-  }, [prices])
-
-  /**
-   * 특정 코인의 마지막 업데이트 시간을 반환하는 함수
-   * @param {string} coinId - 코인 ID
-   */
-  const getLastUpdated = useCallback((coinId) => {
-    const coinData = prices[coinId]
-    if (!coinData) return null
-
-    return coinData.last_updated_at ? new Date(coinData.last_updated_at * 1000) : null
-  }, [prices])
+  /** Getters for components */
+  const getPrice = useCallback((coinId) => prices[coinId]?.usd ?? null, [prices])
+  const getChange24h = useCallback((coinId) => prices[coinId]?.usd_24h_change ?? null, [prices])
+  const getLastUpdated = useCallback(
+    (coinId) =>
+      prices[coinId]?.last_updated_at
+        ? new Date(prices[coinId].last_updated_at * 1000)
+        : null,
+    [prices],
+  )
 
   return {
     prices,
@@ -155,33 +141,31 @@ export const useCoinPrices = () => {
     fetchCoinsList,
     getPrice,
     getChange24h,
-    getLastUpdated
+    getLastUpdated,
   }
 }
 
 /**
- * 실시간 가격 모니터링을 위한 커스텀 훅
- * @param {string[]} coinIds - 모니터링할 코인 ID 배열
- * @param {string[]} currencies - 통화 배열
- * @param {number} interval - 업데이트 간격 (밀리초)
+ * Hook to monitor coin prices in real time.  Polls the Binance API at a
+ * specified interval to refresh prices for the given set of coin IDs.
+ *
+ * @param {string[]} coinIds Array of coin IDs to monitor
+ * @param {string[]} currencies Currently ignored; kept for API compatibility
+ * @param {number} interval Interval in milliseconds between updates
  */
 export const useRealTimePrices = (coinIds = [], currencies = ['usd'], interval = 20000) => {
   const { fetchPrices, ...rest } = useCoinPrices()
 
   useEffect(() => {
     if (!coinIds || coinIds.length === 0) return
-
-    // 초기 가격 가져오기
-    fetchPrices(coinIds, currencies)
-
-    // 주기적으로 가격 업데이트
-    const intervalId = setInterval(() => {
-      fetchPrices(coinIds, currencies)
+    // Fetch initially
+    fetchPrices(coinIds)
+    // Set up interval polling
+    const id = setInterval(() => {
+      fetchPrices(coinIds)
     }, interval)
-
-    return () => clearInterval(intervalId)
+    return () => clearInterval(id)
   }, [coinIds, currencies, interval, fetchPrices])
 
-  return { fetchPrices, ...rest }
+  return rest
 }
-
