@@ -118,3 +118,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+/* 폰트 렌더링 최적화 */
+body {
+  -webkit-font-smoothing: antialiased; /* 웹킷 기반 브라우저 (Chrome, Safari) */
+  -moz-osx-font-smoothing: grayscale; /* 파이어폭스 (macOS) */
+  text-rendering: optimizeLegibility; /* 텍스트 가독성 최적화 */
+}
+
+
