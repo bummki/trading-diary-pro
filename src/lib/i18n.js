@@ -63,7 +63,8 @@ const translations = {
       sell: '매도',
       shares: '주',
       settedAlerts: '설정된 알람',
-      yesterdayCompare: '전일 대비'
+      yesterdayCompare: '전일 대비',
+      updated: '업데이트'
     },
     
     // 거래 내역
@@ -242,7 +243,8 @@ const translations = {
       sell: 'Sell',
       shares: 'shares',
       settedAlerts: 'Set Alerts',
-      yesterdayCompare: 'vs Yesterday'
+      yesterdayCompare: 'vs Yesterday',
+      updated: 'Updated'
     },
     
     // 거래 내역
@@ -421,7 +423,8 @@ const translations = {
       sell: '卖出',
       shares: '股',
       settedAlerts: '设置警报',
-      yesterdayCompare: '较昨日'
+      yesterdayCompare: '较昨日',
+      updated: '更新'
     },
     
     // 거래 내역
@@ -600,7 +603,8 @@ const translations = {
       sell: '売り',
       shares: '株',
       settedAlerts: '設定済みアラート',
-      yesterdayCompare: '前日比'
+      yesterdayCompare: '前日比',
+      updated: '更新'
     },
     
     // 거래 내역

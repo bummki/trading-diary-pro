@@ -53,8 +53,9 @@ export function formatPercent(value, decimals = 2) {
 /**
  * 날짜를 상대적 시간으로 포맷팅
  * @param {Date|number} date - 포맷팅할 날짜
+ * @param {Function} t - 번역 함수
  */
-export function formatRelativeTime(date) {
+export function formatRelativeTime(date, t) {
   if (!date) return '-'
 
   const now = new Date()
@@ -62,25 +63,25 @@ export function formatRelativeTime(date) {
   const diffInSeconds = Math.floor((now - targetDate) / 1000)
 
   if (diffInSeconds < 60) {
-    return '방금 전'
+    return t ? t('trades.justNow') : 'just now'
   }
 
   const diffInMinutes = Math.floor(diffInSeconds / 60)
   if (diffInMinutes < 60) {
-    return `${diffInMinutes}분 전`
+    return t ? `${diffInMinutes} ${t('trades.minutesAgo')}` : `${diffInMinutes} minutes ago`
   }
 
   const diffInHours = Math.floor(diffInMinutes / 60)
   if (diffInHours < 24) {
-    return `${diffInHours}시간 전`
+    return t ? `${diffInHours} ${t('trades.hoursAgo')}` : `${diffInHours} hours ago`
   }
 
   const diffInDays = Math.floor(diffInHours / 24)
   if (diffInDays < 7) {
-    return `${diffInDays}일 전`
+    return t ? `${diffInDays} ${t('trades.daysAgo')}` : `${diffInDays} days ago`
   }
 
-  return targetDate.toLocaleDateString('ko-KR')
+  return targetDate.toLocaleDateString()
 }
 
 /**

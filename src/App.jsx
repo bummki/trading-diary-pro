@@ -98,21 +98,22 @@ function App() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* 헤더 */}
-      <header className="bg-card border-b border-border px-4 py-3">
+      <header className="bg-card border-b border-border px-2 sm:px-4 py-3 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <BarChart3 className="w-5 h-5 text-primary-foreground" />
+          <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 min-w-0">
+            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+              <BarChart3 className="w-3 h-3 sm:w-5 sm:h-5 text-primary-foreground" />
             </div>
-            <h1 className="text-xl font-bold text-foreground">TradingDiaryPro</h1>
+            <h1 className="text-sm sm:text-xl font-bold text-foreground truncate">TradingDiaryPro</h1>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
             <LanguageSelector />
             <ThemeToggle />
             <Button 
               variant="outline" 
               size="sm"
               onClick={() => setShowNotificationSettings(true)}
+              className="hidden sm:flex"
             >
               <Settings className="w-4 h-4 mr-2" />
               {t('header.notificationSettings')}
@@ -120,40 +121,60 @@ function App() {
             <Button 
               variant="outline" 
               size="sm"
+              onClick={() => setShowNotificationSettings(true)}
+              className="sm:hidden p-2"
+            >
+              <Settings className="w-4 h-4" />
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
               onClick={() => setActiveTab('alerts')}
+              className="hidden sm:flex"
             >
               <Bell className="w-4 h-4 mr-2" />
               {t('header.alertSettings')}
             </Button>
-            <Button size="sm" onClick={() => setActiveTab("trades")}>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setActiveTab('alerts')}
+              className="sm:hidden p-2"
+            >
+              <Bell className="w-4 h-4" />
+            </Button>
+            <Button size="sm" onClick={() => setActiveTab("trades")} className="hidden sm:flex">
               <PlusCircle className="w-4 h-4 mr-2" />
               {t("header.addTrade")}
+            </Button>
+            <Button size="sm" onClick={() => setActiveTab("trades")} className="sm:hidden p-2">
+              <PlusCircle className="w-4 h-4" />
             </Button>
           </div>
         </div>
       </header>
 
       {/* 메인 컨텐츠 */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
-            <TabsTrigger value="dashboard">{t('tabs.dashboard')}</TabsTrigger>
-            <TabsTrigger value="trades">{t('tabs.trades')}</TabsTrigger>
-            <TabsTrigger value="alerts">{t('tabs.alerts')}</TabsTrigger>
-            <TabsTrigger value="analytics">{t('tabs.analytics')}</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 mb-4 sm:mb-6 h-auto">
+            <TabsTrigger value="dashboard" className="text-xs sm:text-sm py-2 sm:py-3">{t('tabs.dashboard')}</TabsTrigger>
+            <TabsTrigger value="trades" className="text-xs sm:text-sm py-2 sm:py-3">{t('tabs.trades')}</TabsTrigger>
+            <TabsTrigger value="alerts" className="text-xs sm:text-sm py-2 sm:py-3">{t('tabs.alerts')}</TabsTrigger>
+            <TabsTrigger value="analytics" className="text-xs sm:text-sm py-2 sm:py-3">{t('tabs.analytics')}</TabsTrigger>
           </TabsList>
 
           {/* 대시보드 탭 */}
-          <TabsContent value="dashboard" className="space-y-6">
+          <TabsContent value="dashboard" className="space-y-4 sm:space-y-6">
             {/* 포트폴리오 요약 */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              <Card className="min-w-0">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{t('dashboard.totalAssets')}</CardTitle>
-                  <Wallet className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium truncate">{t('dashboard.totalAssets')}</CardTitle>
+                  <Wallet className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className="text-xl sm:text-2xl font-bold truncate">
                     ₩{portfolioData.totalValue.toLocaleString()}
                   </div>
                   <div className={`flex items-center text-xs ${portfolioData.todayChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -168,29 +189,29 @@ function App() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="min-w-0">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{t('dashboard.todayReturn')}</CardTitle>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium truncate">{t('dashboard.todayReturn')}</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className="text-xl sm:text-2xl font-bold">
                     {portfolioData.todayChangePercent === 0 ? '0.00%' : 
                      portfolioData.todayChangePercent > 0 ? `+${portfolioData.todayChangePercent}%` : 
                      `${portfolioData.todayChangePercent}%`}
                   </div>
-                  <p className="text-xs text-muted-foreground">{t('dashboard.yesterdayCompare')}</p>
+                  <p className="text-xs text-muted-foreground truncate">{t('dashboard.yesterdayCompare')}</p>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="min-w-0">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{t('dashboard.activeAlerts')}</CardTitle>
-                  <Bell className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium truncate">{t('dashboard.activeAlerts')}</CardTitle>
+                  <Bell className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{alertStats.active}</div>
-                  <p className="text-xs text-muted-foreground">{t('dashboard.settedAlerts')}</p>
+                  <div className="text-xl sm:text-2xl font-bold">{alertStats.active}</div>
+                  <p className="text-xs text-muted-foreground truncate">{t('dashboard.settedAlerts')}</p>
                 </CardContent>
               </Card>
             </div>
@@ -219,8 +240,8 @@ function App() {
               <CardContent>
                 {recentTrades.length === 0 ? (
                   <div className="text-center py-8">
-                    <p className="text-gray-500 mb-2">아직 거래 기록이 없습니다</p>
-                    <p className="text-sm text-gray-400">거래 내역 탭에서 첫 번째 거래를 추가해보세요</p>
+                    <p className="text-gray-500 mb-2">{t('trades.noTrades')}</p>
+                    <p className="text-sm text-gray-400">{t('trades.noTradesDesc')}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">

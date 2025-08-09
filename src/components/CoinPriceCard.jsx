@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.j
 import { Badge } from '@/components/ui/badge.jsx'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { formatCurrency, formatPercent, formatRelativeTime, getPriceChangeColor } from '../lib/utils'
+import { useI18n } from '../hooks/useI18n'
 
 export function CoinPriceCard({ 
   coinId, 
@@ -13,6 +14,7 @@ export function CoinPriceCard({
   currency = 'usd',
   className = '' 
 }) {
+  const { t } = useI18n()
   const changeColor = getPriceChangeColor(change24h)
   const ChangeIcon = change24h > 0 ? TrendingUp : change24h < 0 ? TrendingDown : Minus
 
@@ -41,7 +43,7 @@ export function CoinPriceCard({
           </div>
           {lastUpdated && (
             <p className="text-xs text-muted-foreground">
-              업데이트: {formatRelativeTime(lastUpdated)}
+              {t('dashboard.updated')}: {formatRelativeTime(lastUpdated, t)}
             </p>
           )}
         </div>
