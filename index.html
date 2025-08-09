@@ -245,14 +245,17 @@
       /* ===== 탭(대시보드, 거래 내역, 코인 알람, 분석) 스타일을 카드 형태로 변경 ===== */
       /* 각 탭은 카드처럼 보이도록 배경과 테두리를 부여하고,
          flex: 1과 min-width: 0으로 영역을 균등 분할합니다. 활성화된 탭은 기본 색상으로 표시됩니다. */
-      [role='tab'],
-      .tab,
-      .nav-tab {
-        display: inline-flex;
+      /* 탭 컨테이너에 간격을 주어 각 탭 사이의 여백을 균등하게 만듭니다. */
+      [role='tablist'] {
+        /* 기존 레이아웃(grid)을 유지하면서 간격만 지정합니다. */
+        gap: 0.5rem;
+      }
+
+      /* 탭 스타일: 각 탭은 카드처럼 보이도록 배경과 테두리를 부여합니다. */
+      [role='tablist'] > [role='tab'] {
+        display: flex;
         align-items: center;
         justify-content: center;
-        flex: 1;
-        min-width: 0;
         background: var(--card);
         border: 1px solid var(--border);
         border-radius: 12px;
@@ -260,22 +263,16 @@
         color: var(--fg);
         font-weight: 600;
         transition: background 0.2s, color 0.2s, border-color 0.2s;
-      }
-      /* 탭 컨테이너에 간격을 주어 각 탭 사이의 여백을 균등하게 만듭니다. */
-      [role='tablist'] {
-        display: flex;
-        gap: 0.5rem;
+        /* 높이를 부모(grid)의 높이에 맞추어 탭 상하 여백을 없앱니다 */
+        height: 100%;
+        width: 100%;
       }
       /* 탭 활성화(선택) 상태 */
-      [role='tab'][aria-selected='true'],
-      .tab[aria-selected='true'],
-      .nav-tab[aria-selected='true'],
-      [role='tab'].is-active,
-      .tab.is-active,
-      .nav-tab.is-active {
+      [role='tablist'] > [role='tab'][aria-selected='true'],
+      [role='tablist'] > [role='tab'][data-state='active'] {
         background: var(--primary);
-        color: var(--on-primary);
         border-color: var(--primary);
+        color: var(--on-primary);
       }
 
       /* ===== 오른쪽 클릭 가림 방지(오버레이 무력화 - 프로젝트 클래스만 대상) ===== */
