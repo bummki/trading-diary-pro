@@ -1,105 +1,57 @@
 <!doctype html>
-<html lang="ko" class="light">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
-    <!-- 테마 초기화: 항상 dark 또는 light 한 가지만 유지 -->
-    <script>
-      (function () {
-        const KEY = 'trading-diary-theme'
-        const root = document.documentElement
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-        const saved = localStorage.getItem(KEY) // 'dark' | 'light' | null
-        const theme = saved || (prefersDark ? 'dark' : 'light')
-
-        root.classList.remove('dark', 'light')
-        root.classList.add(theme)
-        root.style.colorScheme = theme
-
-        // 시스템 테마 변화는 사용자가 저장값 안 둔 경우에만 따라감
-        const mq = window.matchMedia('(prefers-color-scheme: dark)')
-        const onChange = (e) => {
-          if (!localStorage.getItem(KEY)) {
-            const next = e.matches ? 'dark' : 'light'
-            root.classList.remove('dark', 'light')
-            root.classList.add(next)
-            root.style.colorScheme = next
-            const meta = document.querySelector('meta[name="theme-color"]')
-            if (meta) meta.setAttribute('content', next === 'dark' ? '#0b1220' : '#ffffff')
-          }
-        }
-        if (mq.addEventListener) mq.addEventListener('change', onChange)
-        else mq.addListener(onChange)
-
-        // 전역 토글 함수 (React 등에서 window.setTheme 호출)
-        window.setTheme = function (next) {
-          if (next === 'system') {
-            localStorage.removeItem(KEY)
-            const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-            const sysTheme = sysDark ? 'dark' : 'light'
-            root.classList.remove('dark', 'light')
-            root.classList.add(sysTheme)
-            root.style.colorScheme = sysTheme
-            const meta = document.querySelector('meta[name="theme-color"]')
-            if (meta) meta.setAttribute('content', sysTheme === 'dark' ? '#0b1220' : '#ffffff')
-            return
-          }
-          localStorage.setItem(KEY, next)
-          root.classList.remove('dark', 'light')
-          root.classList.add(next)
-          root.style.colorScheme = next
-          const meta = document.querySelector('meta[name="theme-color"]')
-          if (meta) meta.setAttribute('content', next === 'dark' ? '#0b1220' : '#ffffff')
-        }
-        window.getTheme = () => (root.classList.contains('dark') ? 'dark' : 'light')
-      })()
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E7N2HHKY1K"></script>
-    <script>
-      window.dataLayer = window.dataLayer || []
-      function gtag() { dataLayer.push(arguments) }
-      gtag('js', new Date())
-      gtag('config', 'G-E7N2HHKY1K')
-    </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-E7N2HHKY1K"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag(\'js\', new Date());
+  gtag(\'config\', \'G-E7N2HHKY1K\');
+</script>
 
     <!-- Google AdSense -->
-    <script async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2695727848475573"
-      crossorigin="anonymous"></script>
+ <script async 
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2695727848475573" 
+  crossorigin="anonymous"></script>
 
+    
     <!-- SEO Meta Tags -->
     <title>TradingDiaryPro - 전문 매매일지 & 코인 가격 알람</title>
-    <meta name="description" content="전문적인 매매일지 작성과 실시간 코인 가격 알람을 한 곳에서 관리하세요. 투자 성과를 체계적으로 기록하고 분석하여 더 나은 투자 결정을 내릴 수 있습니다.">
-    <meta name="keywords" content="매매일지, 투자일기, 코인알람, 암호화폐, 비트코인, 이더리움, 투자관리, 포트폴리오, 주식투자, 가격알림, 실시간차트, 투자분석, 수익률계산, 매매기록">
-    <meta name="author" content="TradingDiaryPro">
-    <meta name="robots" content="index, follow">
-    <meta name="language" content="Korean">
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="TradingDiaryPro - 전문 매매일지 & 코인 가격 알람">
-    <meta property="og:description" content="전문적인 매매일지 작성과 실시간 코인 가격 알람을 한 곳에서 관리하세요. 투자 성과를 체계적으로 기록하고 분석하여 더 나은 투자 결정을 내릴 수 있습니다.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://tradingdiarypro.onnuriinfo.com">
-    <meta property="og:image" content="https://tradingdiarypro.onnuriinfo.com/og-image.png">
-    <meta property="og:site_name" content="TradingDiaryPro">
-    <meta property="og:locale" content="ko_KR">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="TradingDiaryPro - 전문 매매일지 & 코인 가격 알람">
-    <meta name="twitter:description" content="전문적인 매매일지 작성과 실시간 코인 가격 알람을 한 곳에서 관리하세요.">
-    <meta name="twitter:image" content="https://tradingdiarypro.onnuriinfo.com/og-image.png">
-
-    <!-- Theme Color (JS에서 동기화) -->
-    <meta name="theme-color" content="#ffffff">
-
-    <!-- Canonical -->
-    <link rel="canonical" href="https://tradingdiarypro.onnuriinfo.com">
-
+    <meta name="description" content="전문적인 매매일지 작성과 실시간 코인 가격 알람을 한 곳에서 관리하세요. 투자 성과를 체계적으로 기록하고 분석하여 더 나은 투자 결정을 내릴 수 있습니다." />
+    <meta name="keywords" content="매매일지, 투자일기, 코인알람, 암호화폐, 비트코인, 이더리움, 투자관리, 포트폴리오, 주식투자, 가격알림, 실시간차트, 투자분석, 수익률계산, 매매기록" />
+    <meta name="author" content="TradingDiaryPro" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="Korean" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="TradingDiaryPro - 전문 매매일지 & 코인 가격 알람" />
+    <meta property="og:description" content="전문적인 매매일지 작성과 실시간 코인 가격 알람을 한 곳에서 관리하세요. 투자 성과를 체계적으로 기록하고 분석하여 더 나은 투자 결정을 내릴 수 있습니다." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://tradingdiarypro.onnuriinfo.com" />
+    <meta property="og:image" content="https://tradingdiarypro.onnuriinfo.com/og-image.png" />
+    <meta property="og:site_name" content="TradingDiaryPro" />
+    <meta property="og:locale" content="ko_KR" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="TradingDiaryPro - 전문 매매일지 & 코인 가격 알람" />
+    <meta name="twitter:description" content="전문적인 매매일지 작성과 실시간 코인 가격 알람을 한 곳에서 관리하세요." />
+    <meta name="twitter:image" content="https://tradingdiarypro.onnuriinfo.com/og-image.png" />
+    
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="TradingDiaryPro" />
+    
+    <!-- Canonical URL -->
+   <link rel="canonical" href="https://tradingdiarypro.onnuriinfo.com" />
+    
     <!-- Structured Data -->
     <script type="application/ld+json">
     {
@@ -110,389 +62,29 @@
       "url": "https://tradingdiarypro.onnuriinfo.com",
       "applicationCategory": "FinanceApplication",
       "operatingSystem": "Web Browser",
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" },
-      "author": { "@type": "Organization", "name": "TradingDiaryPro", "email": "tradingdiarypro521@gmail.com" },
-      "featureList": ["매매일지 관리","코인 가격 알람","실시간 가격 모니터링","CSV 내보내기/가져오기","다국어 지원"]
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "KRW"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "TradingDiaryPro",
+        "email": "tradingdiarypro521@gmail.com"
+      },
+      "featureList": [
+        "매매일지 관리",
+        "코인 가격 알람",
+        "실시간 가격 모니터링",
+        "CSV 내보내기/가져오기",
+        "다국어 지원"
+      ]
     }
     </script>
-
-    <!-- 전역 테마 변수 + 모바일 최적화 + 클릭가림 방지 -->
-    <style>
-      /* ===== 전역 테마 변수 ===== */
-      :root {
-        color-scheme: light;
-        --bg: #ffffff;
-        --fg: #0b1220;
-        --muted: #64748b;
-        --card: #f8fafc;
-        --border: #e2e8f0;
-
-        /* 버튼/강조 (라이트) */
-        --primary: #2563eb;
-        --primary-hover: #1d4ed8;
-        --on-primary: #ffffff;
-      }
-      .dark {
-        color-scheme: dark;
-        --bg: #0b1220;
-        --fg: #e6edf3;
-        --muted: #94a3b8;
-        --card: #0f172a;
-        --border: #1f2937;
-
-        /* 버튼/강조 (다크) */
-        --primary: #3b82f6;
-        --primary-hover: #2563eb;
-        --on-primary: #ffffff;
-      }
-
-      /* ===== 베이스 ===== */
-      html,
-      body {
-        overflow-x: hidden !important;
-        max-width: 100vw !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: var(--bg);
-        color: var(--fg);
-        -webkit-tap-highlight-color: transparent;
-      }
-      * {
-        box-sizing: border-box !important;
-        max-width: 100vw !important;
-      }
-      a {
-        color: var(--primary);
-        text-decoration: none;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
-
-      #root {
-        max-width: 100vw !important;
-        overflow-x: hidden !important;
-      }
-
-      /* ===== 버튼 체계 (거래 추가 등 CTA) ===== */
-      button {
-        appearance: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.375rem;
-        border: none;
-        border-radius: 10px;
-        padding: 0.5rem 0.75rem;
-        font-weight: 700;
-        cursor: pointer;
-        line-height: 1;
-        white-space: nowrap;
-      }
-      button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-      button:focus-visible {
-        outline: 2px solid color-mix(in oklab, var(--primary) 60%, #ffffff);
-        outline-offset: 2px;
-        border-radius: 12px;
-      }
-
-      .btn-primary {
-        background: var(--primary);
-        color: var(--on-primary);
-      }
-      .btn-primary:hover {
-        background: var(--primary-hover);
-      }
-      .btn-primary:active {
-        transform: translateY(1px);
-      }
-
-      .btn-outline {
-        background: transparent;
-        color: var(--fg);
-        border: 1px solid var(--border);
-      }
-      .btn-outline:hover {
-        background: color-mix(in oklab, var(--fg) 8%, transparent);
-      }
-
-      .btn-ghost {
-        background: transparent;
-        color: var(--fg);
-      }
-      .btn-ghost:hover {
-        background: color-mix(in oklab, var(--fg) 6%, transparent);
-      }
-
-      /* ===== 메뉴(테마 변경/알림 설정/알람 설정) 대비 개선 ===== */
-      .menu-item {
-        color: var(--fg);
-        border-radius: 8px;
-        padding: 0.5rem 0.75rem;
-      }
-      .menu-item:hover {
-        background: color-mix(in oklab, var(--fg) 8%, transparent);
-      }
-      .menu-item[aria-current='page'],
-      .menu-item.is-active {
-        background: color-mix(in oklab, var(--primary) 18%, transparent);
-        color: var(--fg);
-      }
-
-      /* ===== 탭(대시보드, 거래 내역, 코인 알람, 분석) 스타일을 카드 형태로 변경 ===== */
-      /*
-         각 탭 리스트는 기본 grid 레이아웃을 유지합니다. 우리는 단지 간격을 주어
-         버튼들이 적절한 여백을 갖도록 합니다. 이렇게 하면 PC 환경에서 네 개의
-         탭이 한 줄에 고르게 배치되고, 모바일에서는 breakpoints에 따라
-         자동으로 줄바꿈됩니다. 탭 자체의 크기를 강제로 100%로 채우지 않아
-         내용에 맞게 자연스럽게 배치됩니다.
-      */
-      [role='tablist'] {
-        gap: 0.5rem;
-      }
-
-      /*
-         탭 버튼을 카드처럼 보이도록 스타일링합니다. 배경과 테두리를 적용하고
-         flex 레이아웃으로 가운데 정렬합니다. 기본적으로 흰색 카드이며
-         글꼴 굵기를 키워 시각적 강조를 줍니다. 텍스트가 길어도 줄임표로
-         표시되도록 해 카드 사이즈를 일정하게 유지합니다.
-      */
-      [role='tablist'] > [role='tab'] {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 0.5rem 0.75rem;
-        color: var(--fg);
-        font-weight: 600;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        transition: background 0.2s, color 0.2s, border-color 0.2s;
-      }
-
-      /*
-         탭 활성화(선택) 상태: 활성화된 탭은 기본(primary) 색상으로 채우고
-         텍스트 색상은 대비되는 색상(on-primary)으로 설정합니다.
-      */
-      [role='tablist'] > [role='tab'][aria-selected='true'],
-      [role='tablist'] > [role='tab'][data-state='active'] {
-        background: var(--primary);
-        border-color: var(--primary);
-        color: var(--on-primary);
-      }
-
-      /* ===== 오른쪽 클릭 가림 방지(오버레이 무력화 - 프로젝트 클래스만 대상) ===== */
-      .overlay,
-      .backdrop,
-      .modal-backdrop,
-      .drawer-mask,
-      [data-overlay],
-      [class*='backdrop'],
-      [class*='overlay'] {
-        pointer-events: none !important;
-      }
-      html:not(.drawer-open) .drawer-mask,
-      html:not(.modal-open) .modal-backdrop {
-        display: none !important;
-      }
-
-      /* ===== 언어 선택 드롭다운 스타일 ===== */
-      .lang-wrap {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.375rem;
-      }
-      .lang-select {
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        background: transparent !important;
-        border: 0;
-        padding: 0 0.95rem 0 0.25rem;
-        height: 24px;
-        line-height: 24px;
-        color: var(--fg);
-        font: inherit;
-        cursor: pointer;
-        /* 기본 브라우저 색상 체계를 무시하고 변수 기반 색상만 사용 */
-        color-scheme: light;
-      }
-      .lang-select::-ms-expand {
-        display: none;
-      }
-      /* 포커스 시 아웃라인 표시 */
-      .lang-select:focus-visible {
-        outline: 2px solid color-mix(in oklab, var(--primary) 60%, #ffffff);
-        outline-offset: 2px;
-        border-radius: 6px;
-      }
-      /* 커스텀 화살표 */
-      .lang-wrap::after {
-        content: '';
-        position: absolute;
-        right: 2px;
-        top: 50%;
-        transform: translateY(-45%);
-        pointer-events: none;
-        border-width: 5px 4px 0 4px;
-        border-style: solid;
-        border-color: var(--fg) transparent transparent transparent;
-        opacity: 0.9;
-      }
-      .dark .lang-wrap::after {
-        border-top-color: var(--fg);
-      }
-
-    /*
-     * Responsive adjustments for dashboard stats cards. On very small screens
-     * the default font sizes used in the dashboard can cause text wrapping or
-     * overflow, which makes the cards appear misaligned or broken. These
-     * rules scale down the font sizes and adjust the minimum width of each
-     * grid column to maintain a consistent layout across different device
-     * widths. See user feedback indicating that the cards looked broken due
-     * to large fonts on mobile.  We clamp the font sizes so that they stay
-     * readable on larger screens while shrinking on smaller screens.
-     */
-    .stats-grid,
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    }
-    .stats-value {
-      /* Dynamically scale number font sizes based on viewport width */
-      font-size: clamp(0.75rem, 1.5vw + 0.6rem, 1rem) !important;
-      font-weight: 700;
-    }
-    .stats-label {
-      /* Scale label fonts slightly smaller to allow more room for numbers */
-      font-size: clamp(0.55rem, 1.2vw + 0.3rem, 0.75rem) !important;
-      opacity: 0.7;
-    }
-    .stats-card,
-    .dashboard-card {
-      /* Prevent long values from overflowing card boundaries */
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    @media (max-width: 768px) {
-      .stats-grid,
-      .dashboard-grid {
-        /* Reduce minimum column width on tablets */
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      }
-    }
-    @media (max-width: 375px) {
-      .stats-grid,
-      .dashboard-grid {
-        /* Further reduce column width on small phones */
-        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-      }
-    }
-    @media (max-width: 320px) {
-      .stats-grid,
-      .dashboard-grid {
-        /* Minimum width for extra small phones */
-        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-      }
-    }
-
-      /* ===== 반응형: 모바일 최적화 ===== */
-      @media (max-width: 768px) {
-        button {
-          font-size: 0.625rem !important;
-          padding: 0.25rem 0.375rem !important;
-          min-width: auto !important;
-          flex-shrink: 1 !important;
-          max-width: none !important;
-        }
-        [role='tab'],
-        .nav-tab,
-        .tab {
-          flex: 1 !important;
-          min-width: 0 !important;
-          font-size: 0.75rem !important;
-          text-align: center !important;
-          padding: 0.5rem 0.25rem !important;
-          overflow: hidden !important;
-          text-overflow: ellipsis !important;
-          /* 모바일에서는 라운드 크기만 줄여 UI가 조밀해지도록 조정 */
-          border-radius: 10px !important;
-        }
-        .flex,
-        [class*='flex'] {
-          min-width: 0 !important;
-          max-width: 100% !important;
-        }
-        .flex > *,
-        [class*='flex'] > * {
-          min-width: 0 !important;
-          flex-shrink: 1 !important;
-        }
-        .grid,
-        [class*='grid'] {
-          min-width: 0 !important;
-          max-width: 100% !important;
-        }
-        .grid > *,
-        [class*='grid'] > * {
-          min-width: 0 !important;
-          overflow: hidden !important;
-        }
-        .card,
-        [class*='card'] {
-          width: 100% !important;
-          max-width: 100% !important;
-          overflow: hidden !important;
-        }
-      }
-      @media (max-width: 375px) {
-        button {
-          font-size: 0.5rem !important;
-          padding: 0.2rem 0.3rem !important;
-        }
-        [role='tab'],
-        .nav-tab,
-        .tab {
-          font-size: 0.625rem !important;
-          padding: 0.4rem 0.2rem !important;
-        }
-      }
-      @media (max-width: 320px) {
-        button {
-          font-size: 0.45rem !important;
-          padding: 0.15rem 0.25rem !important;
-        }
-        [role='tab'],
-        .nav-tab,
-        .tab {
-          font-size: 0.5rem !important;
-          padding: 0.3rem 0.15rem !important;
-        }
-      }
-    </style>
   </head>
-
   <body>
     <div id="root"></div>
-
-    <!-- (테스트용) 테마 토글/CTA 버튼 샘플 — 실제 앱에선 컴포넌트로 구현하고 class="btn-primary"만 사용 -->
-    <!--
-    <div style="position:fixed;right:12px;bottom:12px;z-index:9999;display:flex;gap:8px">
-      <button class="btn-outline" onclick="setTheme('light')">라이트</button>
-      <button class="btn-outline" onclick="setTheme('dark')">다크</button>
-      <button class="btn-outline" onclick="setTheme('system')">시스템</button>
-      <button class="btn-primary">거래 추가</button>
-    </div>
-    -->
-
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
+
