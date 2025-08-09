@@ -1,6 +1,10 @@
-/* ========== App.css — LAYOUT ONLY (안전판) ========== */
+/* =======================================================================
+ * App.css — LAYOUT ONLY
+ * - 디자인(색상, 배경, 보더)은 nav-card-style.css에서만 처리
+ * - 여기서는 배치, 크기, 스크롤만 정의
+ * ======================================================================= */
 
-/* 전역: 가로 스크롤만 최소한으로 방지. (max-width 전역 금지!) */
+/* 전역: 불필요한 max-width, overflow-x 전역 강제 제거 */
 html, body {
   margin: 0;
 }
@@ -8,23 +12,18 @@ body {
   overflow-x: hidden; /* 필요 시에만 */
 }
 
-/* 1) 상단 탭 레이아웃 (모바일에서만 살짝 보조)
-   - display(grid/flex) "강제" 금지!
-   - 부모 컴포넌트(Tailwind)가 grid를 쓰든 flex를 쓰든 방해하지 않도록, gap/치수만 만집니다. */
+/* 1) 상단 탭 레이아웃 (모바일에서만 보조)
+   - display 강제 금지! gap/폭/치수만 설정 */
 @media (max-width: 768px) {
   header [role="tablist"] {
-    /* display 강제하지 않음 */
-    gap: 0.5rem;           /* 여백만 */
+    gap: 0.5rem;
     width: 100%;
   }
 
-  /* 탭 버튼은 한 칸을 꽉 채우도록만 돕기 (부모가 grid든 flex든 상관없이 안전) */
   header [role="tablist"] > [role="tab"] {
     width: 100%;
     min-width: 0;
     white-space: nowrap;
-
-    /* 치수(가독성)만 조정 — 디자인은 nav-card-style.css에서 */
     padding: 0.45rem 0.55rem;
     font-size: 0.8rem;
     line-height: 1;
@@ -37,6 +36,7 @@ body {
     font-size: 0.75rem;
   }
 }
+
 @media (max-width: 320px) {
   header [role="tablist"] > [role="tab"] {
     padding: 0.35rem 0.45rem;
@@ -44,24 +44,26 @@ body {
   }
 }
 
-/* 2) 대시보드 그리드: 최소 칸 폭만 가볍게 보정 (display/grid 강제 X) */
+/* 2) 대시보드 그리드: 최소 칸 폭만 보정 */
 .stats-grid,
 .dashboard-grid {
-  /* 프로젝트 기본 grid 설정을 존중하고, 최소폭만 보정 */
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 }
+
 @media (max-width: 768px) {
   .stats-grid,
   .dashboard-grid {
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   }
 }
+
 @media (max-width: 375px) {
   .stats-grid,
   .dashboard-grid {
     grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   }
 }
+
 @media (max-width: 320px) {
   .stats-grid,
   .dashboard-grid {
@@ -69,7 +71,15 @@ body {
   }
 }
 
-/* 3) 표(테이블) 컨테이너: 작은 화면 가로 스크롤 허용 (디자인 X) */
+/* 3) 카드 컨테이너: 화면 밖 넘침 방지 */
+.card,
+[class*="card"] {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* 4) 표(테이블) 컨테이너: 작은 화면 가로 스크롤 허용 */
 .table-scroll,
 .table-wrap,
 .table-container {
@@ -77,10 +87,25 @@ body {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
+
 .table-scroll table,
 .table-wrap table,
 .table-container table {
   width: 100%;
-  table-layout: fixed; /* 칼럼 폭 균등 */
-  min-width: 640px;    /* 필요 시 조정 */
+  table-layout: fixed;
+  min-width: 640px; /* 필요 시 조정 */
+}
+
+/* 5) 스크롤 관련 유틸 */
+.scroll-y,
+.overflow-y-auto,
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
