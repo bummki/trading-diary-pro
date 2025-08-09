@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea.jsx'
 import { PlusCircle, Edit, Trash2, TrendingUp, TrendingDown, Download, Upload } from 'lucide-react'
 import { useI18n } from '../hooks/useI18n'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.jsx';
 
 // 매매 기법 옵션
 const TRADING_STRATEGIES = [
@@ -308,65 +309,57 @@ export function TradingJournal() {
               <p className="text-sm text-gray-400">첫 번째 거래를 추가하거나 CSV 파일을 업로드하여 매매일지를 시작해보세요</p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {trades.map((trade) => (
-                <div key={trade.id} className="flex items-start justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-start space-x-4 flex-1">
-                    <Badge variant={trade.type === 'buy' ? 'default' : 'secondary'}>
-                      {trade.type === 'buy' ? (
-                        <>
-                          <TrendingUp className="w-3 h-3 mr-1" />
-                          매수
-                        </>
-                      ) : (
-                        <>
-                          <TrendingDown className="w-3 h-3 mr-1" />
-                          매도
-                        </>
-                      )}
-                    </Badge>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <p className="font-medium">{trade.name} ({trade.symbol})</p>
-                        <p className="text-sm text-gray-500">{trade.date}</p>
-                      </div>
-                      <div className="flex items-center space-x-4 mb-2">
-                        <p className="text-sm">{trade.quantity}주 × ${trade.price}</p>
-                        <p className="text-sm font-medium">총액: {formatCurrency(trade.total, 'USD')}</p>
-                      </div>
-                      {trade.strategy && (
-                        <div className="mb-2">
-                          <Badge variant="outline" className="text-xs">
-                            {TRADING_STRATEGIES.find(s => s.value === trade.strategy)?.label}
-                          </Badge>
-                        </div>
-                      )}
-                      {trade.notes && (
-                        <div className="bg-white p-2 rounded border text-sm text-gray-700">
-                          <strong>메모:</strong> {trade.notes}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex space-x-2 ml-4">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleEdit(trade)}
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(trade.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>날짜</TableHead>
+                  <TableHead>종목</TableHead>
+                  <TableHead>유형</TableHead>
+                  <TableHead>수량</TableHead>
+                  <TableHead>가격</TableHead>
+                  <TableHead>총액</TableHead>
+                  <TableHead>매매기법</TableHead>
+                  <TableHead>메모</TableHead>
+                  <TableHead className="text-right">액션</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {trades.map((trade) => (
+                  <TableRow key={trade.id}>
+                    <TableCell>{trade.date}</TableCell>
+                    <TableCell>{trade.name} ({trade.symbol})</TableCell>
+                    <TableCell>
+                      <Badge variant={trade.type === 'buy' ? 'default' : 'secondary'}>
+                        {trade.type === 'buy' ? '매수' : '매도'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{trade.quantity}</TableCell>
+                    <TableCell>{formatCurrency(trade.price, 'USD')}</TableCell>
+                    <TableCell>{formatCurrency(trade.total, 'USD')}</TableCell>
+                    <TableCell>{TRADING_STRATEGIES.find(s => s.value === trade.strategy)?.label || ''}</TableCell>
+                    <TableCell className="max-w-[150px] truncate">{trade.notes}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEdit(trade)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(trade.id)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>
