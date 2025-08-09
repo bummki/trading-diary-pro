@@ -243,15 +243,23 @@
       }
 
       /* ===== 탭(대시보드, 거래 내역, 코인 알람, 분석) 스타일을 카드 형태로 변경 ===== */
-      /* 각 탭은 카드처럼 보이도록 배경과 테두리를 부여하고,
-         flex: 1과 min-width: 0으로 영역을 균등 분할합니다. 활성화된 탭은 기본 색상으로 표시됩니다. */
-      /* 탭 컨테이너에 간격을 주어 각 탭 사이의 여백을 균등하게 만듭니다. */
+      /*
+         각 탭 리스트는 기본 grid 레이아웃을 유지합니다. 우리는 단지 간격을 주어
+         버튼들이 적절한 여백을 갖도록 합니다. 이렇게 하면 PC 환경에서 네 개의
+         탭이 한 줄에 고르게 배치되고, 모바일에서는 breakpoints에 따라
+         자동으로 줄바꿈됩니다. 탭 자체의 크기를 강제로 100%로 채우지 않아
+         내용에 맞게 자연스럽게 배치됩니다.
+      */
       [role='tablist'] {
-        /* 기존 레이아웃(grid)을 유지하면서 간격만 지정합니다. */
         gap: 0.5rem;
       }
 
-      /* 탭 스타일: 각 탭은 카드처럼 보이도록 배경과 테두리를 부여합니다. */
+      /*
+         탭 버튼을 카드처럼 보이도록 스타일링합니다. 배경과 테두리를 적용하고
+         flex 레이아웃으로 가운데 정렬합니다. 기본적으로 흰색 카드이며
+         글꼴 굵기를 키워 시각적 강조를 줍니다. 텍스트가 길어도 줄임표로
+         표시되도록 해 카드 사이즈를 일정하게 유지합니다.
+      */
       [role='tablist'] > [role='tab'] {
         display: flex;
         align-items: center;
@@ -262,12 +270,16 @@
         padding: 0.5rem 0.75rem;
         color: var(--fg);
         font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         transition: background 0.2s, color 0.2s, border-color 0.2s;
-        /* 높이를 부모(grid)의 높이에 맞추어 탭 상하 여백을 없앱니다 */
-        height: 100%;
-        width: 100%;
       }
-      /* 탭 활성화(선택) 상태 */
+
+      /*
+         탭 활성화(선택) 상태: 활성화된 탭은 기본(primary) 색상으로 채우고
+         텍스트 색상은 대비되는 색상(on-primary)으로 설정합니다.
+      */
       [role='tablist'] > [role='tab'][aria-selected='true'],
       [role='tablist'] > [role='tab'][data-state='active'] {
         background: var(--primary);
