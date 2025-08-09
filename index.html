@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    
+    <!-- 다크 모드 초기화 스크립트 -->
+    <script>
+      (function() {
+        const savedTheme = localStorage.getItem('trading-diary-theme');
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        const theme = savedTheme || systemTheme;
+        document.documentElement.classList.add(theme);
+      })();
+    </script>
 
     <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-E7N2HHKY1K"></script>

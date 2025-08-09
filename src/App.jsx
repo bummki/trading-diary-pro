@@ -10,12 +10,15 @@ import { AlertList } from './components/AlertList'
 import { CoinPriceGrid } from './components/CoinPriceCard'
 import { NotificationSettings } from './components/NotificationSettings'
 import { LanguageSelector } from './components/LanguageSelector'
+import { ThemeToggle } from './components/ThemeToggle'
 import { useRealTimeAlerts } from './hooks/useAlerts'
 import { useRealTimePrices, POPULAR_COINS } from './hooks/useCoinPrices'
 import { useNotifications } from './hooks/useNotifications'
+import { useTheme } from './hooks/useTheme'
 import { TradingJournal } from './components/TradingJournal'
 import { useI18n } from './hooks/useI18n'
 import './App.css'
+import './styles/dark-theme.css'
 
 import Footer from './components/Footer'
 
@@ -27,6 +30,9 @@ function App() {
 
   // 다국어 지원 훅
   const { t, formatCurrency } = useI18n()
+
+  // 테마 관리 훅
+  const { theme } = useTheme()
 
   // 알림 관리 훅
   const { requestPermission } = useNotifications()
@@ -90,18 +96,19 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background text-foreground">
       {/* 헤더 */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3">
+      <header className="bg-card border-b border-border px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <BarChart3 className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <BarChart3 className="w-5 h-5 text-primary-foreground" />
             </div>
-            <h1 className="text-xl font-bold text-gray-900">TradingDiaryPro</h1>
+            <h1 className="text-xl font-bold text-foreground">TradingDiaryPro</h1>
           </div>
           <div className="flex items-center space-x-2">
             <LanguageSelector />
+            <ThemeToggle />
             <Button 
               variant="outline" 
               size="sm"
