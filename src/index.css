@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 모바일 오버플로우 방지 전역 스타일 */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img, canvas, svg, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 스크롤바 숨김 유틸리티 */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

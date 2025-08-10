@@ -56,8 +56,8 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
+      <header className="w-full bg-white border-b border-gray-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <BarChart3 className="w-5 h-5 text-white" />
@@ -67,15 +67,15 @@ function App() {
           
           <div className="flex items-center space-x-3">
             <LanguageSelector />
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="hidden md:flex">
               <Settings className="w-4 h-4 mr-2" />
               {t('generalSettings')}
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="hidden md:flex">
               <Bell className="w-4 h-4 mr-2" />
               {t('alertSettings')}
             </Button>
-            <Button size="sm">
+            <Button size="sm" className="hidden md:flex">
               <Plus className="w-4 h-4 mr-2" />
               {t('addTrade')}
             </Button>
@@ -84,13 +84,14 @@ function App() {
       </header>
 
       {/* Navigation Tabs */}
-      <nav className="bg-white border-b border-gray-200 px-6">
-        <div className="flex space-x-8">
+      <nav className="w-full bg-white border-b border-gray-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex gap-6 overflow-x-auto no-scrollbar">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
+              className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'border-blue-600 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -99,11 +100,12 @@ function App() {
               {tab.label}
             </button>
           ))}
+          </div>
         </div>
       </nav>
 
       {/* Main Content */}
-      <main className="px-6 py-6">
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 pb-24 md:pb-8">
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
             {/* Summary Cards             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -439,6 +441,37 @@ function App() {
         coinPrices={coinPrices}
         onAddAlert={addAlert}
       />
+
+      {/* Mobile Action Bar */}
+      <div className="fixed inset-x-0 bottom-0 z-50 md:hidden">
+        <div className="mx-auto max-w-7xl px-4 pb-[env(safe-area-inset-bottom)]">
+          <div className="mb-3 rounded-2xl bg-white/95 border border-slate-200 shadow-lg backdrop-blur">
+            <div className="flex items-center justify-between p-3">
+              <button 
+                id="btn-general" 
+                className="px-3 py-2 text-sm rounded-xl border border-slate-300 hover:bg-slate-50 transition-colors"
+                onClick={() => {/* TODO: openGeneralSettings() */}}
+              >
+                {t('generalSettings')}
+              </button>
+              <button 
+                id="btn-alarm" 
+                className="px-3 py-2 text-sm rounded-xl border border-slate-300 hover:bg-slate-50 transition-colors"
+                onClick={() => {/* TODO: openAlarmSettings() */}}
+              >
+                {t('alertSettings')}
+              </button>
+              <button 
+                id="btn-addtrade" 
+                className="px-3 py-2 text-sm rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors"
+                onClick={() => {/* TODO: openAddTradeModal() */}}
+              >
+                {t('addTrade')}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

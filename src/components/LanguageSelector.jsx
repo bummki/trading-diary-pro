@@ -39,7 +39,7 @@ export const LanguageSelector = () => {
           />
           
           {/* Dropdown */}
-          <Card className="absolute top-full right-0 mt-1 z-20 min-w-[150px]">
+          <Card className="absolute top-full right-0 mt-1 z-20 min-w-32 max-w-full">
             <CardContent className="p-2">
               {languages.map((language) => (
                 <button
