@@ -6,13 +6,17 @@ import { Bell, Settings, Globe, TrendingUp, TrendingDown, BarChart3, RefreshCw, 
 import { useCoinPrices } from './hooks/useCoinPrices'
 import { useAlerts } from './hooks/useAlerts'
 import { useLanguage } from './hooks/useLanguage'
+import { useKPI } from './hooks/useKPI'
 import { AddAlertModal } from './components/AddAlertModal'
+import AddTradeModalV2 from './components/AddTradeModalV2'
 import { LanguageSelector } from './components/LanguageSelector'
 import './App.css'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [showAddAlertModal, setShowAddAlertModal] = useState(false)
+  const [showAddTradeModal, setShowAddTradeModal] = useState(false)
+  const [trades, setTrades] = useState([])
   const { coinPrices, loading, error, lastUpdated, refreshPrices } = useCoinPrices()
   const { 
     alerts, 
@@ -26,11 +30,33 @@ function App() {
     getTriggeredAlertsCount 
   } = useAlerts(coinPrices)
   const { t } = useLanguage()
+  const kpi = useKPI(trades)
 
   // 브라우저 알림 권한 요청
   useEffect(() => {
     requestNotificationPermission()
   }, [])
+
+  // localStorage에서 거래 데이터 로드
+  useEffect(() => {
+    const savedTrades = localStorage.getItem('trades')
+    if (savedTrades) {
+      try {
+        setTrades(JSON.parse(savedTrades))
+      } catch (error) {
+        console.error('Failed to load trades from localStorage:', error)
+      }
+    }
+  }, [])
+
+  // 거래 데이터 변경 시 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('trades', JSON.stringify(trades))
+  }, [trades])
+
+  const addTrade = (trade) => {
+    setTrades(prev => [trade, ...prev])
+  }
 
   const tabs = [
     { id: 'dashboard', label: t('dashboard') },
@@ -71,7 +97,7 @@ function App() {
               <Bell className="w-4 h-4 mr-2" />
               {t('alertSettings')}
             </Button>
-            <Button size="sm" className="hidden md:flex" onClick={() => {/* TODO: setIsAddTradeOpen(true) */}}>
+            <Button size="sm" className="hidden md:flex" onClick={() => setShowAddTradeModal(true)}>
               <Plus className="w-4 h-4 mr-2" />
               {t('addTrade')}
             </Button>
@@ -104,26 +130,29 @@ function App() {
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 pb-24 md:pb-8">
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
-            {/* Summary Cards             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {/* Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-600">{t('totalAssets')}</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-600">총 거래수</CardTitle>
                   <BarChart3 className="w-4 h-4 text-gray-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">₩0</div>
-                  <p className="text-xs text-gray-500 mt-1">₩0 (0.00%)</p>
+                  <div className="text-2xl font-bold">{kpi.totalTrades}</div>
+                  <p className="text-xs text-gray-500 mt-1">완결 거래 기준</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-600">{t('todayReturn')}</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-600">누적 손익</CardTitle>
                   <TrendingUp className="w-4 h-4 text-gray-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">0.00%</div>
-                  <p className="text-xs text-gray-500 mt-1">{t('previousDay')}</p>
+                  <div className={`text-2xl font-bold ${kpi.totalPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {kpi.totalPnl >= 0 ? '+' : ''}{kpi.totalPnl.toFixed(0)} KRW
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">승률: {kpi.winRate.toFixed(1)}%</p>
                 </CardContent>
               </Card>
 
@@ -143,6 +172,50 @@ function App() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* KPI 상세 정보 */}
+            {kpi.totalTrades > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-gray-600">평균 손익</CardTitle>
+                    <BarChart3 className="w-4 h-4 text-gray-400" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className={`text-2xl font-bold ${kpi.avgPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {kpi.avgPnl >= 0 ? '+' : ''}{kpi.avgPnl.toFixed(0)} KRW
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">거래당 평균</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-gray-600">최고 수익</CardTitle>
+                    <TrendingUp className="w-4 h-4 text-green-400" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-green-600">
+                      +{kpi.maxProfit.toFixed(0)} KRW
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">단일 거래 최고</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-gray-600">최대 손실</CardTitle>
+                    <TrendingDown className="w-4 h-4 text-red-400" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-red-600">
+                      {kpi.maxLoss.toFixed(0)} KRW
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">단일 거래 최대</p>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
 
             {/* Coin Prices Section */}
             <div className="space-y-4">
@@ -255,17 +328,130 @@ function App() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">거래 내역</h2>
-              <Button>새 거래 추가</Button>
+              <Button onClick={() => setShowAddTradeModal(true)}>
+                <Plus className="w-4 h-4 mr-2" />
+                새 거래 추가
+              </Button>
             </div>
-            <Card>
-              <CardContent className="p-8 text-center">
-                <div className="text-gray-400 mb-4">
-                  <BarChart3 className="w-12 h-12 mx-auto" />
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">거래 내역이 없습니다</h3>
-                <p className="text-gray-500">첫 번째 거래를 추가해보세요</p>
-              </CardContent>
-            </Card>
+
+            {/* KPI 요약 */}
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-gray-900">{kpi.totalTrades}</div>
+                  <p className="text-xs text-gray-500">총 거래수</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className={`text-2xl font-bold ${kpi.totalPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {kpi.totalPnl >= 0 ? '+' : ''}{kpi.totalPnl.toFixed(0)}
+                  </div>
+                  <p className="text-xs text-gray-500">누적 손익 (KRW)</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-blue-600">{kpi.winRate.toFixed(1)}%</div>
+                  <p className="text-xs text-gray-500">승률</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className={`text-2xl font-bold ${kpi.avgPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {kpi.avgPnl >= 0 ? '+' : ''}{kpi.avgPnl.toFixed(0)}
+                  </div>
+                  <p className="text-xs text-gray-500">평균 손익</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-green-600">+{kpi.maxProfit.toFixed(0)}</div>
+                  <p className="text-xs text-gray-500">최고 수익</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-red-600">{kpi.maxLoss.toFixed(0)}</div>
+                  <p className="text-xs text-gray-500">최대 손실</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* 거래 리스트 */}
+            {trades.length === 0 ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <div className="text-gray-400 mb-4">
+                    <BarChart3 className="w-12 h-12 mx-auto" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">거래 내역이 없습니다</h3>
+                  <p className="text-gray-500 mb-4">첫 번째 거래를 추가해보세요</p>
+                  <Button onClick={() => setShowAddTradeModal(true)}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    거래 추가하기
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {trades.map((trade) => (
+                  <Card key={trade.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <Badge variant={trade.side === 'buy' ? 'default' : 'secondary'}>
+                              {trade.side === 'buy' ? '매수' : '매도'}
+                            </Badge>
+                            <span className="font-semibold text-lg">{trade.symbol}</span>
+                            <span className="text-gray-500">{trade.market === 'crypto' ? '코인' : '주식'}</span>
+                            {trade.closed && (
+                              <Badge variant={trade.realizedPnl >= 0 ? 'default' : 'destructive'} 
+                                     className={trade.realizedPnl >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                                완결
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div>
+                              <p className="text-gray-500">진입가</p>
+                              <p className="font-medium">{parseFloat(trade.price).toLocaleString()} KRW</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500">수량</p>
+                              <p className="font-medium">
+                                {trade.inputType === 'quantity' 
+                                  ? parseFloat(trade.qtyOrAmount).toFixed(8)
+                                  : (parseFloat(trade.qtyOrAmount) / parseFloat(trade.price)).toFixed(8)
+                                }
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500">날짜</p>
+                              <p className="font-medium">{new Date(trade.date).toLocaleDateString('ko-KR')}</p>
+                            </div>
+                            {trade.closed && trade.realizedPnl !== null && (
+                              <div>
+                                <p className="text-gray-500">실현손익</p>
+                                <p className={`font-medium ${trade.realizedPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                  {trade.realizedPnl >= 0 ? '+' : ''}{trade.realizedPnl.toFixed(0)} KRW
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                          {trade.note && (
+                            <div className="mt-2 p-2 bg-gray-50 rounded text-sm">
+                              <p className="text-gray-700">{trade.note}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -438,6 +624,13 @@ function App() {
         onAddAlert={addAlert}
       />
 
+      {/* Add Trade Modal V2 */}
+      <AddTradeModalV2
+        isOpen={showAddTradeModal}
+        onClose={() => setShowAddTradeModal(false)}
+        onAddTrade={addTrade}
+      />
+
       {/* Mobile Action Bar */}
       <div className="fixed inset-x-0 bottom-0 z-[60] md:hidden pointer-events-none">
         <div className="mx-auto max-w-7xl px-4 pb-[env(safe-area-inset-bottom)]">
@@ -455,7 +648,7 @@ function App() {
                 type="button"
                 id="btn-addtrade" 
                 className="px-4 py-2 text-sm rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors"
-                onClick={() => {/* TODO: setIsAddTradeOpen(true) */}}
+                onClick={() => setShowAddTradeModal(true)}
               >
                 {t('addTrade')}
               </button>
