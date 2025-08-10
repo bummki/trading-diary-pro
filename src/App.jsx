@@ -7,12 +7,15 @@ import { useCoinPrices } from './hooks/useCoinPrices'
 import { useAlerts } from './hooks/useAlerts'
 import { useLanguage } from './hooks/useLanguage'
 import { AddAlertModal } from './components/AddAlertModal'
+import AddTradeModalV2 from './components/AddTradeModalV2'
 import { LanguageSelector } from './components/LanguageSelector'
 import './App.css'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [showAddAlertModal, setShowAddAlertModal] = useState(false)
+  const [showAddTradeModal, setShowAddTradeModal] = useState(false)
+  const [trades, setTrades] = useState([])
   const { coinPrices, loading, error, lastUpdated, refreshPrices } = useCoinPrices()
   const { 
     alerts, 
@@ -31,6 +34,27 @@ function App() {
   useEffect(() => {
     requestNotificationPermission()
   }, [])
+
+  // localStorage에서 거래 데이터 로드
+  useEffect(() => {
+    const savedTrades = localStorage.getItem('trades')
+    if (savedTrades) {
+      try {
+        setTrades(JSON.parse(savedTrades))
+      } catch (error) {
+        console.error('Failed to load trades from localStorage:', error)
+      }
+    }
+  }, [])
+
+  // 거래 데이터 변경 시 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('trades', JSON.stringify(trades))
+  }, [trades])
+
+  const addTrade = (trade) => {
+    setTrades(prev => [trade, ...prev])
+  }
 
   const tabs = [
     { id: 'dashboard', label: t('dashboard') },
@@ -71,7 +95,7 @@ function App() {
               <Bell className="w-4 h-4 mr-2" />
               {t('alertSettings')}
             </Button>
-            <Button size="sm" className="hidden md:flex" onClick={() => {/* TODO: setIsAddTradeOpen(true) */}}>
+            <Button size="sm" className="hidden md:flex" onClick={() => setShowAddTradeModal(true)}>
               <Plus className="w-4 h-4 mr-2" />
               {t('addTrade')}
             </Button>
@@ -438,6 +462,13 @@ function App() {
         onAddAlert={addAlert}
       />
 
+      {/* Add Trade Modal V2 */}
+      <AddTradeModalV2
+        isOpen={showAddTradeModal}
+        onClose={() => setShowAddTradeModal(false)}
+        onAddTrade={addTrade}
+      />
+
       {/* Mobile Action Bar */}
       <div className="fixed inset-x-0 bottom-0 z-[60] md:hidden pointer-events-none">
         <div className="mx-auto max-w-7xl px-4 pb-[env(safe-area-inset-bottom)]">
@@ -455,7 +486,7 @@ function App() {
                 type="button"
                 id="btn-addtrade" 
                 className="px-4 py-2 text-sm rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors"
-                onClick={() => {/* TODO: setIsAddTradeOpen(true) */}}
+                onClick={() => setShowAddTradeModal(true)}
               >
                 {t('addTrade')}
               </button>
