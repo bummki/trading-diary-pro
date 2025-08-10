@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Badge } from '@/components/ui/badge.jsx'
-import { Bell, Settings, Globe, TrendingUp, TrendingDown, BarChart3, RefreshCw, Plus, Trash2, Power, PowerOff } from 'lucide-react'
+import { Bell, Settings, Globe, TrendingUp, TrendingDown, BarChart3, RefreshCw, Plus, Trash2, Power, PowerOff, BookOpen } from 'lucide-react'
 import { useCoinPrices } from './hooks/useCoinPrices'
 import { useAlerts } from './hooks/useAlerts'
 import { useLanguage } from './hooks/useLanguage'
 import { useKPI } from './hooks/useKPI'
 import { AddAlertModal } from './components/AddAlertModal'
 import AddTradeModalV2 from './components/AddTradeModalV2'
+import DiaryModal from './components/DiaryModal'
 import { LanguageSelector } from './components/LanguageSelector'
 import './App.css'
 
@@ -16,7 +17,9 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [showAddAlertModal, setShowAddAlertModal] = useState(false)
   const [showAddTradeModal, setShowAddTradeModal] = useState(false)
+  const [showDiaryModal, setShowDiaryModal] = useState(false)
   const [trades, setTrades] = useState([])
+  const [diaryEntries, setDiaryEntries] = useState([])
   const { coinPrices, loading, error, lastUpdated, refreshPrices } = useCoinPrices()
   const { 
     alerts, 
@@ -49,20 +52,51 @@ function App() {
     }
   }, [])
 
+  // localStorage에서 일지 데이터 로드
+  useEffect(() => {
+    const savedDiaries = localStorage.getItem('diaryEntries')
+    if (savedDiaries) {
+      try {
+        setDiaryEntries(JSON.parse(savedDiaries))
+      } catch (error) {
+        console.error('Failed to load diary entries from localStorage:', error)
+      }
+    }
+  }, [])
+
   // 거래 데이터 변경 시 localStorage에 저장
   useEffect(() => {
     localStorage.setItem('trades', JSON.stringify(trades))
   }, [trades])
 
+  // 일지 데이터 변경 시 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('diaryEntries', JSON.stringify(diaryEntries))
+  }, [diaryEntries])
+
   const addTrade = (trade) => {
     setTrades(prev => [trade, ...prev])
+  }
+
+  const saveDiary = (diary, editingId) => {
+    if (diary === null) {
+      // 삭제
+      setDiaryEntries(prev => prev.filter(d => d.id !== editingId))
+    } else if (editingId) {
+      // 수정
+      setDiaryEntries(prev => prev.map(d => d.id === editingId ? diary : d))
+    } else {
+      // 새로 추가
+      setDiaryEntries(prev => [diary, ...prev])
+    }
   }
 
   const tabs = [
     { id: 'dashboard', label: t('dashboard') },
     { id: 'trades', label: t('trades') },
     { id: 'alerts', label: t('alerts') },
-    { id: 'analysis', label: t('analysis') }
+    { id: 'analysis', label: t('analysis') },
+    { id: 'diary', label: '매매일지' }
   ]
 
   const formatPrice = (price) => {
@@ -111,6 +145,7 @@ function App() {
           <div className="flex gap-6 overflow-x-auto no-scrollbar">
           {tabs.map((tab) => (
             <button
+              type="button"
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
@@ -614,6 +649,78 @@ function App() {
             </Card>
           </div>
         )}
+
+        {activeTab === 'diary' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-900">매매일지</h2>
+              <Button onClick={() => setShowDiaryModal(true)}>
+                <BookOpen className="w-4 h-4 mr-2" />
+                일지 작성
+              </Button>
+            </div>
+            
+            {diaryEntries.length === 0 ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <div className="text-gray-400 mb-4">
+                    <BookOpen className="w-12 h-12 mx-auto" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">작성된 일지가 없습니다</h3>
+                  <p className="text-gray-500 mb-4">매매 경험과 학습 내용을 기록해보세요</p>
+                  <Button onClick={() => setShowDiaryModal(true)}>
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    첫 번째 일지 작성하기
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4">
+                {diaryEntries
+                  .sort((a, b) => new Date(b.date) - new Date(a.date))
+                  .map((entry) => (
+                    <Card key={entry.id} className="hover:shadow-md transition-shadow">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <h3 className="text-lg font-semibold">{entry.title}</h3>
+                              <Badge variant="outline">{entry.category}</Badge>
+                            </div>
+                            <p className="text-gray-600 mb-3">
+                              {entry.content.length > 200 
+                                ? entry.content.substring(0, 200) + '...' 
+                                : entry.content
+                              }
+                            </p>
+                            <div className="flex items-center justify-between text-sm text-gray-500">
+                              <span>{entry.date}</span>
+                              {entry.keywords && entry.keywords.length > 0 && (
+                                <div className="flex flex-wrap gap-1">
+                                  {(Array.isArray(entry.keywords) ? entry.keywords : [entry.keywords])
+                                    .slice(0, 3)
+                                    .map((keyword, index) => (
+                                      <span key={index} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
+                                        {keyword}
+                                      </span>
+                                    ))
+                                  }
+                                  {Array.isArray(entry.keywords) && entry.keywords.length > 3 && (
+                                    <span className="text-gray-400 text-xs">+{entry.keywords.length - 3}</span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                }
+              </div>
+            )}
+          </div>
+        )}
       </main>
 
       {/* Add Alert Modal */}
@@ -629,6 +736,14 @@ function App() {
         isOpen={showAddTradeModal}
         onClose={() => setShowAddTradeModal(false)}
         onAddTrade={addTrade}
+      />
+
+      {/* Diary Modal */}
+      <DiaryModal
+        isOpen={showDiaryModal}
+        onClose={() => setShowDiaryModal(false)}
+        onSaveDiary={saveDiary}
+        diaryEntries={diaryEntries}
       />
 
       {/* Mobile Action Bar */}
