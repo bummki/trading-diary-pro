@@ -67,15 +67,11 @@ function App() {
           
           <div className="flex items-center space-x-3">
             <LanguageSelector />
-            <Button variant="outline" size="sm" className="hidden md:flex">
-              <Settings className="w-4 h-4 mr-2" />
-              {t('generalSettings')}
-            </Button>
-            <Button variant="outline" size="sm" className="hidden md:flex">
+            <Button variant="outline" size="sm" className="hidden md:flex" onClick={() => setShowAddAlertModal(true)}>
               <Bell className="w-4 h-4 mr-2" />
               {t('alertSettings')}
             </Button>
-            <Button size="sm" className="hidden md:flex">
+            <Button size="sm" className="hidden md:flex" onClick={() => {/* TODO: setIsAddTradeOpen(true) */}}>
               <Plus className="w-4 h-4 mr-2" />
               {t('addTrade')}
             </Button>
@@ -443,28 +439,23 @@ function App() {
       />
 
       {/* Mobile Action Bar */}
-      <div className="fixed inset-x-0 bottom-0 z-50 md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-[60] md:hidden pointer-events-none">
         <div className="mx-auto max-w-7xl px-4 pb-[env(safe-area-inset-bottom)]">
-          <div className="mb-3 rounded-2xl bg-white/95 border border-slate-200 shadow-lg backdrop-blur">
-            <div className="flex items-center justify-between p-3">
+          <div className="mb-3 rounded-2xl bg-white/95 border border-slate-200 shadow-lg backdrop-blur pointer-events-auto">
+            <div className="flex items-center justify-around p-3">
               <button 
-                id="btn-general" 
-                className="px-3 py-2 text-sm rounded-xl border border-slate-300 hover:bg-slate-50 transition-colors"
-                onClick={() => {/* TODO: openGeneralSettings() */}}
-              >
-                {t('generalSettings')}
-              </button>
-              <button 
+                type="button"
                 id="btn-alarm" 
-                className="px-3 py-2 text-sm rounded-xl border border-slate-300 hover:bg-slate-50 transition-colors"
-                onClick={() => {/* TODO: openAlarmSettings() */}}
+                className="px-4 py-2 text-sm rounded-xl border border-slate-300 hover:bg-slate-50 transition-colors"
+                onClick={() => setShowAddAlertModal(true)}
               >
                 {t('alertSettings')}
               </button>
               <button 
+                type="button"
                 id="btn-addtrade" 
-                className="px-3 py-2 text-sm rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors"
-                onClick={() => {/* TODO: openAddTradeModal() */}}
+                className="px-4 py-2 text-sm rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors"
+                onClick={() => {/* TODO: setIsAddTradeOpen(true) */}}
               >
                 {t('addTrade')}
               </button>
