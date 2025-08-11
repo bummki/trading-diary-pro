@@ -5,7 +5,16 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
-
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+    allowedHosts: 'all'
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: 4173,
+    allowedHosts: 'all'
+  },
   plugins: [react(),tailwindcss()],
   resolve: {
     alias: {

@@ -174,6 +174,37 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
     event.target.value = ''; // 파일 입력 초기화
   };
 
+  const exportToCSV = () => {
+    if (diaryEntries.length === 0) {
+      alert('내보낼 일지가 없습니다.');
+      return;
+    }
+
+    const headers = ['날짜', '제목', '카테고리', '내용', '키워드', '생성일', '수정일'];
+    const csvContent = [
+      headers.join(','),
+      ...diaryEntries.map(entry => [
+        entry.date,
+        `"${entry.title}"`,
+        entry.category,
+        `"${entry.content.replace(/"/g, '""')}"`,
+        `"${Array.isArray(entry.keywords) ? entry.keywords.join(', ') : entry.keywords || ''}"`,
+        entry.createdAt,
+        entry.updatedAt
+      ].join(','))
+    ].join('\\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `trading_diary_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (!isOpen) return null;
 
   return (
