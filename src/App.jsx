@@ -10,7 +10,7 @@ import { useKPI } from './hooks/useKPI'
 import { AddAlertModal } from './components/AddAlertModal'
 import AddTradeModalV2 from './components/AddTradeModalV2'
 import DiaryModal from './components/DiaryModal'
-import { LanguageDropdown } from './components/LanguageDropdown'
+import { LanguageSelector } from './components/LanguageDropdown'
 import './App.css'
 
 function App() {
@@ -126,7 +126,7 @@ function App() {
           </div>
           
           <div className="flex items-center space-x-3">
-            <LanguageDropdown />
+            <LanguageSelector />
             <Button variant="outline" size="sm" className="hidden md:flex" onClick={() => setShowAddAlertModal(true)}>
               <Bell className="w-4 h-4 mr-2" />
               {t('alertSettings')}

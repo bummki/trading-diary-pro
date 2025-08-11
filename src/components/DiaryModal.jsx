@@ -140,10 +140,10 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
             const entry = {
               id: Date.now().toString() + i,
               date: values[0],
-              title: "",values[1].replace(/^"|"$/g, '').replace(/""/g, '"'),
-              category: "",values[2],
-              content: "",values[3].replace(/^"|"$/g, '').replace(/""/g, '"'),
-              keywords: "",values[4].replace(/^"|"$/g, '').split(', ').filter(k => k),
+              title: values[1].replace(/^"|"$/g, ""),
+              category: values[2],
+              content: values[3].replace(/^"|"$/g, ""),
+              keywords: values[4].replace(/^"|"$/g, '').split(', ').filter(k => k),
               createdAt: values[5],
               updatedAt: values[6]
             };
@@ -256,7 +256,7 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
                   <textarea
                     placeholder="매매 경험, 학습 내용, 시장 분석 등을 자유롭게 작성하세요 (예: 삼성전자, 애플)"
                     value={formData.content}
-                    onChange={(e) => handleInputChange(\'content\', e.target.value)}
+                    onChange={(e) => handleInputChange('content', e.target.value)}
                     className="w-full p-2 border rounded-lg h-40 resize-none"
                     required
                   />
