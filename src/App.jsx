@@ -151,7 +151,8 @@ function App() {
             <button
               type="button"
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => { if (tab.id === 'diary') setShowDiaryModal(true); setActiveTab(tab.id); }}
+
               className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'border-blue-600 text-blue-600'
