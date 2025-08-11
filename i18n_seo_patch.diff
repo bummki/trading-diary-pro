@@ -1,0 +1,1082 @@
+diff -ruN orig/trading-diary-pro-main/package.json trading-diary-pro/trading-diary-pro-main/package.json
+--- orig/trading-diary-pro-main/package.json	2025-08-11 00:43:06.000000000 +0000
++++ trading-diary-pro/trading-diary-pro-main/package.json	2025-08-11 02:17:09.065805945 +0000
+@@ -60,6 +60,11 @@
+     "tailwindcss": "^4.1.7",
+     "vaul": "^1.1.2",
+     "zod": "^3.24.4"
++    ,
++    "i18next": "^23.10.0",
++    "react-i18next": "^14.0.0",
++    "i18next-browser-languagedetector": "^7.1.0",
++    "react-helmet-async": "^1.3.0"
+   },
+   "devDependencies": {
+     "@eslint/js": "^9.25.0",
+diff -ruN orig/trading-diary-pro-main/src/App.jsx trading-diary-pro/trading-diary-pro-main/src/App.jsx
+--- orig/trading-diary-pro-main/src/App.jsx	2025-08-11 00:43:06.000000000 +0000
++++ trading-diary-pro/trading-diary-pro-main/src/App.jsx	2025-08-11 02:20:26.975020170 +0000
+@@ -6,11 +6,12 @@
+ import { useCoinPrices } from './hooks/useCoinPrices'
+ import { useAlerts } from './hooks/useAlerts'
+ import { useLanguage } from './hooks/useLanguage'
++import { Helmet } from 'react-helmet-async'
+ import { useKPI } from './hooks/useKPI'
+ import { AddAlertModal } from './components/AddAlertModal'
+ import AddTradeModalV2 from './components/AddTradeModalV2'
+ import DiaryModal from './components/DiaryModal'
+-import { LanguageSelector } from './components/LanguageSelector'
++import LanguageDropdown from './components/LanguageDropdown.jsx'
+ import './App.css'
+ 
+ function App() {
+@@ -32,7 +33,7 @@
+     getActiveAlertsCount,
+     getTriggeredAlertsCount 
+   } = useAlerts(coinPrices)
+-  const { t } = useLanguage()
++  const { t, currentLanguage } = useLanguage()
+   const kpi = useKPI(trades)
+ 
+   // 브라우저 알림 권한 요청
+@@ -96,9 +97,18 @@
+     { id: 'trades', label: t('trades') },
+     { id: 'alerts', label: t('alerts') },
+     { id: 'analysis', label: t('analysis') },
+-    { id: 'diary', label: '매매일지' }
++    { id: 'diary', label: t('diary') }
+   ]
+ 
++  // Map our language codes to locale codes for SEO metadata and `<html lang>`.
++  const localeMap = {
++    ko: 'ko-KR',
++    en: 'en-US',
++    zh: 'zh-CN',
++    ja: 'ja-JP',
++    es: 'es-ES',
++  }
++
+   const formatPrice = (price) => {
+     return new Intl.NumberFormat('ko-KR', {
+       style: 'currency',
+@@ -114,7 +124,15 @@
+   }
+ 
+   return (
+-    <div className="min-h-screen bg-gray-50">
++    <>
++      {/* SEO metadata. Title and description are translated. */}
++      <Helmet>
++        <title>{`${t('appName')} | ${t(activeTab)}`}</title>
++        <meta name="description" content={t('recentTradesDesc')} />
++        <meta name="keywords" content="주식 매매일지, 거래일지, Trading Journal, Diario de Trading, 交易日记, 取引日誌" />
++        <meta property="og:locale" content={localeMap[currentLanguage] || 'ko-KR'} />
++      </Helmet>
++      <div className="min-h-screen bg-gray-50">
+       {/* Header */}
+       <header className="w-full bg-white border-b border-gray-200">
+         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+@@ -126,7 +144,7 @@
+           </div>
+           
+           <div className="flex items-center space-x-3">
+-            <LanguageSelector />
++            <LanguageDropdown />
+             <Button variant="outline" size="sm" className="hidden md:flex" onClick={() => setShowAddAlertModal(true)}>
+               <Bell className="w-4 h-4 mr-2" />
+               {t('alertSettings')}
+@@ -169,25 +187,25 @@
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+               <Card>
+                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+-                  <CardTitle className="text-sm font-medium text-gray-600">총 거래수</CardTitle>
++                  <CardTitle className="text-sm font-medium text-gray-600">{t('totalTrades')}</CardTitle>
+                   <BarChart3 className="w-4 h-4 text-gray-400" />
+                 </CardHeader>
+                 <CardContent>
+                   <div className="text-2xl font-bold">{kpi.totalTrades}</div>
+-                  <p className="text-xs text-gray-500 mt-1">완결 거래 기준</p>
++                  <p className="text-xs text-gray-500 mt-1">{t('completedTradesBasis')}</p>
+                 </CardContent>
+               </Card>
+ 
+               <Card>
+                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+-                  <CardTitle className="text-sm font-medium text-gray-600">누적 손익</CardTitle>
++                  <CardTitle className="text-sm font-medium text-gray-600">{t('cumulativePnL')}</CardTitle>
+                   <TrendingUp className="w-4 h-4 text-gray-400" />
+                 </CardHeader>
+                 <CardContent>
+                   <div className={`text-2xl font-bold ${kpi.totalPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                     {kpi.totalPnl >= 0 ? '+' : ''}{kpi.totalPnl.toFixed(0)} KRW
+                   </div>
+-                  <p className="text-xs text-gray-500 mt-1">승률: {kpi.winRate.toFixed(1)}%</p>
++                  <p className="text-xs text-gray-500 mt-1">{t('winRate')}: {kpi.winRate.toFixed(1)}%</p>
+                 </CardContent>
+               </Card>
+ 
+diff -ruN orig/trading-diary-pro-main/src/components/LanguageDropdown.jsx trading-diary-pro/trading-diary-pro-main/src/components/LanguageDropdown.jsx
+--- orig/trading-diary-pro-main/src/components/LanguageDropdown.jsx	1970-01-01 00:00:00.000000000 +0000
++++ trading-diary-pro/trading-diary-pro-main/src/components/LanguageDropdown.jsx	2025-08-11 02:19:19.506615509 +0000
+@@ -0,0 +1,63 @@
++import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
++import { Button } from '@/components/ui/button.jsx'
++import { ChevronDown, Globe } from 'lucide-react'
++import { useLanguage } from '../hooks/useLanguage'
++
++/**
++ * LanguageDropdown renders an accessible language picker using Radix UI's
++ * DropdownMenu. It replaces the previous LanguageSelector component. The
++ * currently selected language is shown on the trigger button as a flag and
++ * label, and choosing a different language updates i18next and localStorage.
++ *
++ * Keyboard navigation is supported out of the box by Radix UI: users can
++ * navigate between radio items with ArrowUp/Down, Home/End, and select a
++ * language with Enter or Space. Pressing Escape or clicking outside the
++ * menu closes it. Appropriate ARIA attributes are set via Radix components.
++ */
++export const LanguageDropdown = () => {
++  const { currentLanguage, changeLanguage, getAvailableLanguages } = useLanguage()
++  const languages = getAvailableLanguages()
++  const currentLang = languages.find((lang) => lang.code === currentLanguage)
++
++  return (
++    <DropdownMenu.Root>
++      <DropdownMenu.Trigger asChild>
++        <Button
++          variant="outline"
++          size="sm"
++          className="flex items-center space-x-2"
++          aria-haspopup="menu"
++          aria-expanded="false"
++        >
++          <Globe className="w-4 h-4" />
++          <span>{currentLang?.flag}</span>
++          <span className="hidden sm:inline">{currentLang?.name}</span>
++          <ChevronDown className="w-3 h-3" />
++        </Button>
++      </DropdownMenu.Trigger>
++      <DropdownMenu.Content
++        sideOffset={4}
++        align="end"
++        className="z-20 min-w-32 bg-white border border-gray-200 rounded-md shadow-lg focus:outline-none"
++        role="menu"
++      >
++        <DropdownMenu.RadioGroup value={currentLanguage} onValueChange={changeLanguage}>
++          {languages.map((language) => (
++            <DropdownMenu.RadioItem
++              key={language.code}
++              value={language.code}
++              className="flex items-center space-x-2 px-3 py-2 text-sm cursor-pointer select-none hover:bg-gray-100 focus:bg-gray-100 outline-none"
++              role="menuitemradio"
++              aria-checked={currentLanguage === language.code}
++            >
++              <span>{language.flag}</span>
++              <span>{language.name}</span>
++            </DropdownMenu.RadioItem>
++          ))}
++        </DropdownMenu.RadioGroup>
++      </DropdownMenu.Content>
++    </DropdownMenu.Root>
++  )
++}
++
++export default LanguageDropdown
+\ No newline at end of file
+diff -ruN orig/trading-diary-pro-main/src/hooks/useLanguage.js trading-diary-pro/trading-diary-pro-main/src/hooks/useLanguage.js
+--- orig/trading-diary-pro-main/src/hooks/useLanguage.js	2025-08-11 00:43:06.000000000 +0000
++++ trading-diary-pro/trading-diary-pro-main/src/hooks/useLanguage.js	2025-08-11 02:19:10.134560023 +0000
+@@ -1,367 +1,57 @@
+ import { useState, useEffect } from 'react'
++import i18n from '../i18n'
+ 
+-const translations = {
+-  ko: {
+-    // Header
+-    appName: 'TradingDiaryPro',
+-    language: 'KR',
+-    generalSettings: '일반 설정',
+-    alertSettings: '알람 설정',
+-    addTrade: '거래 추가',
+-    
+-    // Navigation
+-    dashboard: '대시보드',
+-    trades: '거래 내역',
+-    alerts: '코인 알람',
+-    analysis: '분석',
+-    
+-    // Dashboard Cards
+-    totalAssets: '총 자산',
+-    todayReturn: '오늘 수익률',
+-    activeAlerts: '활성 알람',
+-    previousDay: '전일 대비',
+-    setAlerts: '설정된 알람',
+-    alertsTriggered: '개 알람 발생',
+-    
+-    // Coin Prices
+-    popularCoins: '인기 코인 가격',
+-    lastUpdated: '업데이트',
+-    refresh: '새로고침',
+-    priceLoadError: '가격 정보를 불러오는데 실패했습니다',
+-    realTimePrices: '실시간 코인 가격을 확인하세요',
+-    justNow: '방금 전',
+-    
+-    // Recent Trades
+-    recentTrades: '최근 거래',
+-    recentTradesDesc: '최근 거래 내역을 확인하세요',
+-    noTrades: '아직 거래 기록이 없습니다',
+-    noTradesDesc: '거래 내역 탭에서 첫 번째 거래를 추가해보세요',
+-    addFirstTrade: '거래 추가하기',
+-    
+-    // Trades Page
+-    newTrade: '새 거래 추가',
+-    noTradesData: '거래 내역이 없습니다',
+-    addFirstTradeDesc: '첫 번째 거래를 추가해보세요',
+-    
+-    // Alerts Page
+-    newAlert: '새 알람 추가',
+-    firstAlert: '첫 번째 알람 추가',
+-    triggeredAlerts: '발생한 알람',
+-    clearAll: '모두 지우기',
+-    activeAlertsList: '활성 알람',
+-    noAlertsSet: '설정된 알람이 없습니다',
+-    noAlertsDesc: '코인 가격 알람을 설정해보세요',
+-    alertTriggered: '알람 발생',
+-    target: '목표',
+-    current: '현재',
+-    created: '생성',
+-    above: '이상',
+-    below: '이하',
+-    triggered: '발생됨',
+-    active: '활성',
+-    inactive: '비활성',
+-    
+-    // Add Alert Modal
+-    addNewAlert: '새 알람 추가',
+-    selectCoin: '코인 선택',
+-    selectCoinPlaceholder: '코인을 선택하세요',
+-    currentPrice: '현재 가격',
+-    alertCondition: '알람 조건',
+-    priceAbove: '가격 이상',
+-    priceBelow: '가격 이하',
+-    targetPrice: '목표 가격 (USD)',
+-    targetPricePlaceholder: '목표 가격을 입력하세요',
+-    cancel: '취소',
+-    addAlert: '알람 추가',
+-    
+-    // Validation
+-    selectCoinError: '코인을 선택해주세요',
+-    validPriceError: '유효한 가격을 입력해주세요',
+-    
+-    // Analysis Page
+-    noAnalysisData: '분석 데이터가 없습니다',
+-    noAnalysisDesc: '거래 데이터가 쌓이면 분석 결과를 확인할 수 있습니다'
+-  },
+-  
+-  en: {
+-    // Header
+-    appName: 'TradingDiaryPro',
+-    language: 'EN',
+-    generalSettings: 'General Settings',
+-    alertSettings: 'Alert Settings',
+-    addTrade: 'Add Trade',
+-    
+-    // Navigation
+-    dashboard: 'Dashboard',
+-    trades: 'Trade History',
+-    alerts: 'Coin Alerts',
+-    analysis: 'Analysis',
+-    
+-    // Dashboard Cards
+-    totalAssets: 'Total Assets',
+-    todayReturn: 'Today\'s Return',
+-    activeAlerts: 'Active Alerts',
+-    previousDay: 'vs Previous Day',
+-    setAlerts: 'Set Alerts',
+-    alertsTriggered: ' alerts triggered',
+-    
+-    // Coin Prices
+-    popularCoins: 'Popular Coin Prices',
+-    lastUpdated: 'Updated',
+-    refresh: 'Refresh',
+-    priceLoadError: 'Failed to load price information',
+-    realTimePrices: 'Check real-time coin prices',
+-    justNow: 'just now',
+-    
+-    // Recent Trades
+-    recentTrades: 'Recent Trades',
+-    recentTradesDesc: 'Check your recent trading history',
+-    noTrades: 'No trading records yet',
+-    noTradesDesc: 'Add your first trade in the Trade History tab',
+-    addFirstTrade: 'Add Trade',
+-    
+-    // Trades Page
+-    newTrade: 'Add New Trade',
+-    noTradesData: 'No trading history',
+-    addFirstTradeDesc: 'Add your first trade',
+-    
+-    // Alerts Page
+-    newAlert: 'Add New Alert',
+-    firstAlert: 'Add First Alert',
+-    triggeredAlerts: 'Triggered Alerts',
+-    clearAll: 'Clear All',
+-    activeAlertsList: 'Active Alerts',
+-    noAlertsSet: 'No alerts set',
+-    noAlertsDesc: 'Set up coin price alerts',
+-    alertTriggered: 'Alert Triggered',
+-    target: 'Target',
+-    current: 'Current',
+-    created: 'Created',
+-    above: 'above',
+-    below: 'below',
+-    triggered: 'Triggered',
+-    active: 'Active',
+-    inactive: 'Inactive',
+-    
+-    // Add Alert Modal
+-    addNewAlert: 'Add New Alert',
+-    selectCoin: 'Select Coin',
+-    selectCoinPlaceholder: 'Please select a coin',
+-    currentPrice: 'Current Price',
+-    alertCondition: 'Alert Condition',
+-    priceAbove: 'Price Above',
+-    priceBelow: 'Price Below',
+-    targetPrice: 'Target Price (USD)',
+-    targetPricePlaceholder: 'Enter target price',
+-    cancel: 'Cancel',
+-    addAlert: 'Add Alert',
+-    
+-    // Validation
+-    selectCoinError: 'Please select a coin',
+-    validPriceError: 'Please enter a valid price',
+-    
+-    // Analysis Page
+-    noAnalysisData: 'No analysis data',
+-    noAnalysisDesc: 'Analysis results will be available once trading data accumulates'
+-  },
+-  
+-  zh: {
+-    // Header
+-    appName: 'TradingDiaryPro',
+-    language: 'CN',
+-    generalSettings: '通用设置',
+-    alertSettings: '警报设置',
+-    addTrade: '添加交易',
+-    
+-    // Navigation
+-    dashboard: '仪表板',
+-    trades: '交易历史',
+-    alerts: '币种警报',
+-    analysis: '分析',
+-    
+-    // Dashboard Cards
+-    totalAssets: '总资产',
+-    todayReturn: '今日收益',
+-    activeAlerts: '活跃警报',
+-    previousDay: '较前日',
+-    setAlerts: '设置警报',
+-    alertsTriggered: '个警报触发',
+-    
+-    // Coin Prices
+-    popularCoins: '热门币种价格',
+-    lastUpdated: '更新时间',
+-    refresh: '刷新',
+-    priceLoadError: '加载价格信息失败',
+-    realTimePrices: '查看实时币种价格',
+-    justNow: '刚刚',
+-    
+-    // Recent Trades
+-    recentTrades: '最近交易',
+-    recentTradesDesc: '查看您的最近交易历史',
+-    noTrades: '暂无交易记录',
+-    noTradesDesc: '在交易历史标签中添加您的第一笔交易',
+-    addFirstTrade: '添加交易',
+-    
+-    // Trades Page
+-    newTrade: '添加新交易',
+-    noTradesData: '无交易历史',
+-    addFirstTradeDesc: '添加您的第一笔交易',
+-    
+-    // Alerts Page
+-    newAlert: '添加新警报',
+-    firstAlert: '添加第一个警报',
+-    triggeredAlerts: '触发的警报',
+-    clearAll: '全部清除',
+-    activeAlertsList: '活跃警报',
+-    noAlertsSet: '未设置警报',
+-    noAlertsDesc: '设置币种价格警报',
+-    alertTriggered: '警报触发',
+-    target: '目标',
+-    current: '当前',
+-    created: '创建',
+-    above: '以上',
+-    below: '以下',
+-    triggered: '已触发',
+-    active: '活跃',
+-    inactive: '非活跃',
+-    
+-    // Add Alert Modal
+-    addNewAlert: '添加新警报',
+-    selectCoin: '选择币种',
+-    selectCoinPlaceholder: '请选择币种',
+-    currentPrice: '当前价格',
+-    alertCondition: '警报条件',
+-    priceAbove: '价格以上',
+-    priceBelow: '价格以下',
+-    targetPrice: '目标价格 (USD)',
+-    targetPricePlaceholder: '输入目标价格',
+-    cancel: '取消',
+-    addAlert: '添加警报',
+-    
+-    // Validation
+-    selectCoinError: '请选择币种',
+-    validPriceError: '请输入有效价格',
+-    
+-    // Analysis Page
+-    noAnalysisData: '无分析数据',
+-    noAnalysisDesc: '交易数据积累后将显示分析结果'
+-  },
+-  
+-  ja: {
+-    // Header
+-    appName: 'TradingDiaryPro',
+-    language: 'JP',
+-    generalSettings: '一般設定',
+-    alertSettings: 'アラート設定',
+-    addTrade: '取引追加',
+-    
+-    // Navigation
+-    dashboard: 'ダッシュボード',
+-    trades: '取引履歴',
+-    alerts: 'コインアラート',
+-    analysis: '分析',
+-    
+-    // Dashboard Cards
+-    totalAssets: '総資産',
+-    todayReturn: '今日の収益',
+-    activeAlerts: 'アクティブアラート',
+-    previousDay: '前日比',
+-    setAlerts: '設定アラート',
+-    alertsTriggered: 'つのアラートが発生',
+-    
+-    // Coin Prices
+-    popularCoins: '人気コイン価格',
+-    lastUpdated: '更新',
+-    refresh: '更新',
+-    priceLoadError: '価格情報の読み込みに失敗しました',
+-    realTimePrices: 'リアルタイムコイン価格を確認',
+-    justNow: 'たった今',
+-    
+-    // Recent Trades
+-    recentTrades: '最近の取引',
+-    recentTradesDesc: '最近の取引履歴を確認',
+-    noTrades: 'まだ取引記録がありません',
+-    noTradesDesc: '取引履歴タブで最初の取引を追加してください',
+-    addFirstTrade: '取引追加',
+-    
+-    // Trades Page
+-    newTrade: '新しい取引を追加',
+-    noTradesData: '取引履歴がありません',
+-    addFirstTradeDesc: '最初の取引を追加してください',
+-    
+-    // Alerts Page
+-    newAlert: '新しいアラートを追加',
+-    firstAlert: '最初のアラートを追加',
+-    triggeredAlerts: '発生したアラート',
+-    clearAll: 'すべてクリア',
+-    activeAlertsList: 'アクティブアラート',
+-    noAlertsSet: '設定されたアラートがありません',
+-    noAlertsDesc: 'コイン価格アラートを設定してください',
+-    alertTriggered: 'アラート発生',
+-    target: 'ターゲット',
+-    current: '現在',
+-    created: '作成',
+-    above: '以上',
+-    below: '以下',
+-    triggered: '発生済み',
+-    active: 'アクティブ',
+-    inactive: '非アクティブ',
+-    
+-    // Add Alert Modal
+-    addNewAlert: '新しいアラートを追加',
+-    selectCoin: 'コイン選択',
+-    selectCoinPlaceholder: 'コインを選択してください',
+-    currentPrice: '現在価格',
+-    alertCondition: 'アラート条件',
+-    priceAbove: '価格以上',
+-    priceBelow: '価格以下',
+-    targetPrice: 'ターゲット価格 (USD)',
+-    targetPricePlaceholder: 'ターゲット価格を入力',
+-    cancel: 'キャンセル',
+-    addAlert: 'アラート追加',
+-    
+-    // Validation
+-    selectCoinError: 'コインを選択してください',
+-    validPriceError: '有効な価格を入力してください',
+-    
+-    // Analysis Page
+-    noAnalysisData: '分析データがありません',
+-    noAnalysisDesc: '取引データが蓄積されると分析結果を確認できます'
+-  }
+-}
+-
++/**
++ * A hook that provides the current language, a way to change languages and a
++ * translation function. It synchronises its state with i18next so that
++ * components using this hook will react to changes from outside (e.g. path
++ * detection or localStorage). This replaces the original hard‑coded
++ * translations with calls into i18next, which reads from JSON resource files.
++ */
+ export const useLanguage = () => {
+-  const [currentLanguage, setCurrentLanguage] = useState('ko')
++  const [currentLanguage, setCurrentLanguage] = useState(i18n.language || 'ko')
+ 
+-  // 로컬 스토리지에서 언어 설정 불러오기
++  // Keep our React state in sync with i18next. When i18next detects a language
++  // change (via the language detector or programmatically), update state so
++  // consumers re-render.
+   useEffect(() => {
+-    const savedLanguage = localStorage.getItem('tradingDiaryLanguage')
+-    if (savedLanguage && translations[savedLanguage]) {
+-      setCurrentLanguage(savedLanguage)
++    const handleChange = (lng) => {
++      setCurrentLanguage(lng)
++    }
++    i18n.on('languageChanged', handleChange)
++    return () => {
++      i18n.off('languageChanged', handleChange)
+     }
+   }, [])
+ 
+-  // 언어 변경 시 로컬 스토리지에 저장
+-  useEffect(() => {
+-    localStorage.setItem('tradingDiaryLanguage', currentLanguage)
+-  }, [currentLanguage])
+-
++  /**
++   * Change the application's language. This delegates to i18next so that the
++   * language detector's cache is updated and the <html lang> attribute is set.
++   */
+   const changeLanguage = (language) => {
+-    if (translations[language]) {
+-      setCurrentLanguage(language)
+-    }
++    if (!language || !i18n.hasResourceBundle(language, 'translation')) return
++    i18n.changeLanguage(language)
+   }
+ 
+-  const t = (key) => {
+-    return translations[currentLanguage]?.[key] || key
++  /**
++   * Translation function. Delegates to i18next's `t`.
++   */
++  const t = (key, options) => {
++    return i18n.t(key, options)
+   }
+ 
++  /**
++   * Returns the list of available languages along with human‑readable labels
++   * and emoji flags. Spanish (es) has been added to the list to satisfy
++   * multilingual requirements.
++   */
+   const getAvailableLanguages = () => {
+     return [
+       { code: 'ko', name: '한국어', flag: '🇰🇷' },
+       { code: 'en', name: 'English', flag: '🇺🇸' },
+       { code: 'zh', name: '中文', flag: '🇨🇳' },
+-      { code: 'ja', name: '日本語', flag: '🇯🇵' }
++      { code: 'ja', name: '日本語', flag: '🇯🇵' },
++      { code: 'es', name: 'Español', flag: '🇪🇸' }
+     ]
+   }
+ 
+diff -ruN orig/trading-diary-pro-main/src/i18n.js trading-diary-pro/trading-diary-pro-main/src/i18n.js
+--- orig/trading-diary-pro-main/src/i18n.js	1970-01-01 00:00:00.000000000 +0000
++++ trading-diary-pro/trading-diary-pro-main/src/i18n.js	2025-08-11 02:17:19.337872623 +0000
+@@ -0,0 +1,59 @@
++import i18n from 'i18next'
++import { initReactI18next } from 'react-i18next'
++import LanguageDetector from 'i18next-browser-languagedetector'
++
++// Import translation resources. These files are generated alongside this configuration.
++import ko from './locales/ko.json'
++import en from './locales/en.json'
++import zh from './locales/zh.json'
++import ja from './locales/ja.json'
++import es from './locales/es.json'
++
++// Map our resource files into the shape expected by i18next.
++const resources = {
++  ko: { translation: ko },
++  en: { translation: en },
++  zh: { translation: zh },
++  ja: { translation: ja },
++  es: { translation: es },
++}
++
++// Initialise i18next. We use the browser language detector to detect the user's
++// preferred language via the URL path (e.g. /en/), localStorage (lang key), and
++// the browser's navigator setting. The default fallback language is Korean (ko).
++i18n
++  .use(LanguageDetector)
++  .use(initReactI18next)
++  .init({
++    resources,
++    fallbackLng: 'ko',
++    supportedLngs: ['ko', 'en', 'zh', 'ja', 'es'],
++    detection: {
++      // Check the first segment of the URL path for a language code. E.g. /en/
++      order: ['path', 'localStorage', 'navigator'],
++      lookupFromPathIndex: 0,
++      // Use a custom localStorage key rather than the default `i18nextLng`
++      lookupLocalStorage: 'lang',
++      caches: ['localStorage'],
++    },
++    interpolation: {
++      escapeValue: false, // React already escapes values by default
++    },
++    react: {
++      useSuspense: false,
++    },
++    // When a key is missing from the current locale file, enable saveMissing
++    // to collect missing keys. You can later use these to fill out other
++    // translations. This matches the specification's requirement to track
++    // missing translation keys automatically.
++    saveMissing: true,
++  })
++
++// Keep the <html lang="..."> attribute in sync with the active language.
++i18n.on('languageChanged', (lng) => {
++  if (typeof document !== 'undefined') {
++    document.documentElement.lang = lng
++  }
++})
++
++export default i18n
+\ No newline at end of file
+diff -ruN orig/trading-diary-pro-main/src/locales/en.json trading-diary-pro/trading-diary-pro-main/src/locales/en.json
+--- orig/trading-diary-pro-main/src/locales/en.json	1970-01-01 00:00:00.000000000 +0000
++++ trading-diary-pro/trading-diary-pro-main/src/locales/en.json	2025-08-11 02:17:40.578008910 +0000
+@@ -0,0 +1,76 @@
++{
++  "appName": "TradingDiaryPro",
++  "language": "EN",
++  "generalSettings": "General Settings",
++  "alertSettings": "Alert Settings",
++  "addTrade": "Add Trade",
++
++  "dashboard": "Dashboard",
++  "trades": "Trade History",
++  "alerts": "Coin Alerts",
++  "analysis": "Analysis",
++  "diary": "Trading Diary",
++
++  "totalAssets": "Total Assets",
++  "todayReturn": "Today's Return",
++  "activeAlerts": "Active Alerts",
++  "previousDay": "vs Previous Day",
++  "setAlerts": "Set Alerts",
++  "alertsTriggered": " alerts triggered",
++
++  "popularCoins": "Popular Coin Prices",
++  "lastUpdated": "Updated",
++  "refresh": "Refresh",
++  "priceLoadError": "Failed to load price information",
++  "realTimePrices": "Check real-time coin prices",
++  "justNow": "just now",
++
++  "recentTrades": "Recent Trades",
++  "recentTradesDesc": "Check your recent trading history",
++  "noTrades": "No trading records yet",
++  "noTradesDesc": "Add your first trade in the Trade History tab",
++  "addFirstTrade": "Add Trade",
++
++  "newTrade": "Add New Trade",
++  "noTradesData": "No trading history",
++  "addFirstTradeDesc": "Add your first trade",
++
++  "newAlert": "Add New Alert",
++  "firstAlert": "Add First Alert",
++  "triggeredAlerts": "Triggered Alerts",
++  "clearAll": "Clear All",
++  "activeAlertsList": "Active Alerts",
++  "noAlertsSet": "No alerts set",
++  "noAlertsDesc": "Set up coin price alerts",
++  "alertTriggered": "Alert Triggered",
++  "target": "Target",
++  "current": "Current",
++  "created": "Created",
++  "above": "above",
++  "below": "below",
++  "triggered": "Triggered",
++  "active": "Active",
++  "inactive": "Inactive",
++
++  "addNewAlert": "Add New Alert",
++  "selectCoin": "Select Coin",
++  "selectCoinPlaceholder": "Please select a coin",
++  "currentPrice": "Current Price",
++  "alertCondition": "Alert Condition",
++  "priceAbove": "Price Above",
++  "priceBelow": "Price Below",
++  "targetPrice": "Target Price (USD)",
++  "targetPricePlaceholder": "Enter target price",
++  "cancel": "Cancel",
++  "addAlert": "Add Alert",
++
++  "selectCoinError": "Please select a coin",
++  "validPriceError": "Please enter a valid price",
++
++  "noAnalysisData": "No analysis data",
++  "noAnalysisDesc": "Analysis results will be available once trading data accumulates",
++  "totalTrades": "Total Trades",
++  "completedTradesBasis": "Completed trades basis",
++  "cumulativePnL": "Cumulative PnL",
++  "winRate": "Win Rate"
++}
+\ No newline at end of file
+diff -ruN orig/trading-diary-pro-main/src/locales/es.json trading-diary-pro/trading-diary-pro-main/src/locales/es.json
+--- orig/trading-diary-pro-main/src/locales/es.json	1970-01-01 00:00:00.000000000 +0000
++++ trading-diary-pro/trading-diary-pro-main/src/locales/es.json	2025-08-11 02:18:17.178227996 +0000
+@@ -0,0 +1,76 @@
++{
++  "appName": "TradingDiaryPro",
++  "language": "ES",
++  "generalSettings": "Configuración general",
++  "alertSettings": "Configuración de alertas",
++  "addTrade": "Agregar operación",
++
++  "dashboard": "Panel de control",
++  "trades": "Historial de transacciones",
++  "alerts": "Alertas de monedas",
++  "analysis": "Análisis",
++  "diary": "Diario de trading",
++
++  "totalAssets": "Activos totales",
++  "todayReturn": "Retorno de hoy",
++  "activeAlerts": "Alertas activas",
++  "previousDay": "vs día anterior",
++  "setAlerts": "Establecer alertas",
++  "alertsTriggered": " alertas activadas",
++
++  "popularCoins": "Precios de monedas populares",
++  "lastUpdated": "Actualizado",
++  "refresh": "Actualizar",
++  "priceLoadError": "Error al cargar la información de precios",
++  "realTimePrices": "Consulta precios de monedas en tiempo real",
++  "justNow": "justo ahora",
++
++  "recentTrades": "Operaciones recientes",
++  "recentTradesDesc": "Consulta tu historial de operaciones recientes",
++  "noTrades": "Sin registros de operaciones aún",
++  "noTradesDesc": "Añade tu primera operación en la pestaña de historial",
++  "addFirstTrade": "Agregar operación",
++
++  "newTrade": "Agregar nueva operación",
++  "noTradesData": "No hay historial de operaciones",
++  "addFirstTradeDesc": "Agrega tu primera operación",
++
++  "newAlert": "Agregar nueva alerta",
++  "firstAlert": "Agregar primera alerta",
++  "triggeredAlerts": "Alertas activadas",
++  "clearAll": "Borrar todo",
++  "activeAlertsList": "Alertas activas",
++  "noAlertsSet": "No hay alertas configuradas",
++  "noAlertsDesc": "Configura alertas de precios de monedas",
++  "alertTriggered": "Alerta activada",
++  "target": "Objetivo",
++  "current": "Actual",
++  "created": "Creado",
++  "above": "por encima",
++  "below": "por debajo",
++  "triggered": "Activada",
++  "active": "Activa",
++  "inactive": "Inactiva",
++
++  "addNewAlert": "Agregar nueva alerta",
++  "selectCoin": "Seleccionar moneda",
++  "selectCoinPlaceholder": "Selecciona una moneda",
++  "currentPrice": "Precio actual",
++  "alertCondition": "Condición de alerta",
++  "priceAbove": "Precio superior",
++  "priceBelow": "Precio inferior",
++  "targetPrice": "Precio objetivo (USD)",
++  "targetPricePlaceholder": "Ingresa precio objetivo",
++  "cancel": "Cancelar",
++  "addAlert": "Agregar alerta",
++
++  "selectCoinError": "Por favor, selecciona una moneda",
++  "validPriceError": "Por favor, introduce un precio válido",
++
++  "noAnalysisData": "Sin datos de análisis",
++  "noAnalysisDesc": "Los resultados estarán disponibles cuando se acumulen datos de operaciones",
++  "totalTrades": "Total de operaciones",
++  "completedTradesBasis": "En función de operaciones completadas",
++  "cumulativePnL": "PnL acumulado",
++  "winRate": "Tasa de éxito"
++}
+\ No newline at end of file
+diff -ruN orig/trading-diary-pro-main/src/locales/ja.json trading-diary-pro/trading-diary-pro-main/src/locales/ja.json
+--- orig/trading-diary-pro-main/src/locales/ja.json	1970-01-01 00:00:00.000000000 +0000
++++ trading-diary-pro/trading-diary-pro-main/src/locales/ja.json	2025-08-11 02:18:03.386144245 +0000
+@@ -0,0 +1,76 @@
++{
++  "appName": "TradingDiaryPro",
++  "language": "JP",
++  "generalSettings": "一般設定",
++  "alertSettings": "アラート設定",
++  "addTrade": "取引追加",
++
++  "dashboard": "ダッシュボード",
++  "trades": "取引履歴",
++  "alerts": "コインアラート",
++  "analysis": "分析",
++  "diary": "取引日誌",
++
++  "totalAssets": "総資産",
++  "todayReturn": "今日の収益",
++  "activeAlerts": "アクティブアラート",
++  "previousDay": "前日比",
++  "setAlerts": "設定アラート",
++  "alertsTriggered": "つのアラートが発生",
++
++  "popularCoins": "人気コイン価格",
++  "lastUpdated": "更新",
++  "refresh": "更新",
++  "priceLoadError": "価格情報の読み込みに失敗しました",
++  "realTimePrices": "リアルタイムコイン価格を確認",
++  "justNow": "たった今",
++
++  "recentTrades": "最近の取引",
++  "recentTradesDesc": "最近の取引履歴を確認",
++  "noTrades": "まだ取引記録がありません",
++  "noTradesDesc": "取引履歴タブで最初の取引を追加してください",
++  "addFirstTrade": "取引追加",
++
++  "newTrade": "新しい取引を追加",
++  "noTradesData": "取引履歴がありません",
++  "addFirstTradeDesc": "最初の取引を追加してください",
++
++  "newAlert": "新しいアラートを追加",
++  "firstAlert": "最初のアラートを追加",
++  "triggeredAlerts": "発生したアラート",
++  "clearAll": "すべてクリア",
++  "activeAlertsList": "アクティブアラート",
++  "noAlertsSet": "設定されたアラートがありません",
++  "noAlertsDesc": "コイン価格アラートを設定してください",
++  "alertTriggered": "アラート発生",
++  "target": "ターゲット",
++  "current": "現在",
++  "created": "作成",
++  "above": "以上",
++  "below": "以下",
++  "triggered": "発生済み",
++  "active": "アクティブ",
++  "inactive": "非アクティブ",
++
++  "addNewAlert": "新しいアラートを追加",
++  "selectCoin": "コイン選択",
++  "selectCoinPlaceholder": "コインを選択してください",
++  "currentPrice": "現在価格",
++  "alertCondition": "アラート条件",
++  "priceAbove": "価格以上",
++  "priceBelow": "価格以下",
++  "targetPrice": "ターゲット価格 (USD)",
++  "targetPricePlaceholder": "ターゲット価格を入力",
++  "cancel": "キャンセル",
++  "addAlert": "アラート追加",
++
++  "selectCoinError": "コインを選択してください",
++  "validPriceError": "有効な価格を入力してください",
++
++  "noAnalysisData": "分析データがありません",
++  "noAnalysisDesc": "取引データが蓄積されると分析結果を確認できます",
++  "totalTrades": "総取引数",
++  "completedTradesBasis": "完了した取引に基づく",
++  "cumulativePnL": "累積損益",
++  "winRate": "勝率"
++}
+\ No newline at end of file
+diff -ruN orig/trading-diary-pro-main/src/locales/ko.json trading-diary-pro/trading-diary-pro-main/src/locales/ko.json
+--- orig/trading-diary-pro-main/src/locales/ko.json	1970-01-01 00:00:00.000000000 +0000
++++ trading-diary-pro/trading-diary-pro-main/src/locales/ko.json	2025-08-11 02:17:30.381944313 +0000
+@@ -0,0 +1,76 @@
++{
++  "appName": "TradingDiaryPro",
++  "language": "KR",
++  "generalSettings": "일반 설정",
++  "alertSettings": "알람 설정",
++  "addTrade": "거래 추가",
++
++  "dashboard": "대시보드",
++  "trades": "거래 내역",
++  "alerts": "코인 알람",
++  "analysis": "분석",
++  "diary": "매매일지",
++
++  "totalAssets": "총 자산",
++  "todayReturn": "오늘 수익률",
++  "activeAlerts": "활성 알람",
++  "previousDay": "전일 대비",
++  "setAlerts": "설정된 알람",
++  "alertsTriggered": "개 알람 발생",
++
++  "popularCoins": "인기 코인 가격",
++  "lastUpdated": "업데이트",
++  "refresh": "새로고침",
++  "priceLoadError": "가격 정보를 불러오는데 실패했습니다",
++  "realTimePrices": "실시간 코인 가격을 확인하세요",
++  "justNow": "방금 전",
++
++  "recentTrades": "최근 거래",
++  "recentTradesDesc": "최근 거래 내역을 확인하세요",
++  "noTrades": "아직 거래 기록이 없습니다",
++  "noTradesDesc": "거래 내역 탭에서 첫 번째 거래를 추가해보세요",
++  "addFirstTrade": "거래 추가하기",
++
++  "newTrade": "새 거래 추가",
++  "noTradesData": "거래 내역이 없습니다",
++  "addFirstTradeDesc": "첫 번째 거래를 추가해보세요",
++
++  "newAlert": "새 알람 추가",
++  "firstAlert": "첫 번째 알람 추가",
++  "triggeredAlerts": "발생한 알람",
++  "clearAll": "모두 지우기",
++  "activeAlertsList": "활성 알람",
++  "noAlertsSet": "설정된 알람이 없습니다",
++  "noAlertsDesc": "코인 가격 알람을 설정해보세요",
++  "alertTriggered": "알람 발생",
++  "target": "목표",
++  "current": "현재",
++  "created": "생성",
++  "above": "이상",
++  "below": "이하",
++  "triggered": "발생됨",
++  "active": "활성",
++  "inactive": "비활성",
++
++  "addNewAlert": "새 알람 추가",
++  "selectCoin": "코인 선택",
++  "selectCoinPlaceholder": "코인을 선택하세요",
++  "currentPrice": "현재 가격",
++  "alertCondition": "알람 조건",
++  "priceAbove": "가격 이상",
++  "priceBelow": "가격 이하",
++  "targetPrice": "목표 가격 (USD)",
++  "targetPricePlaceholder": "목표 가격을 입력하세요",
++  "cancel": "취소",
++  "addAlert": "알람 추가",
++
++  "selectCoinError": "코인을 선택해주세요",
++  "validPriceError": "유효한 가격을 입력해주세요",
++
++  "noAnalysisData": "분석 데이터가 없습니다",
++  "noAnalysisDesc": "거래 데이터가 쌓이면 분석 결과를 확인할 수 있습니다",
++  "totalTrades": "총 거래수",
++  "completedTradesBasis": "완결 거래 기준",
++  "cumulativePnL": "누적 손익",
++  "winRate": "승률"
++}
+\ No newline at end of file
+diff -ruN orig/trading-diary-pro-main/src/locales/zh.json trading-diary-pro/trading-diary-pro-main/src/locales/zh.json
+--- orig/trading-diary-pro-main/src/locales/zh.json	1970-01-01 00:00:00.000000000 +0000
++++ trading-diary-pro/trading-diary-pro-main/src/locales/zh.json	2025-08-11 02:17:51.826077204 +0000
+@@ -0,0 +1,76 @@
++{
++  "appName": "TradingDiaryPro",
++  "language": "CN",
++  "generalSettings": "通用设置",
++  "alertSettings": "警报设置",
++  "addTrade": "添加交易",
++
++  "dashboard": "仪表板",
++  "trades": "交易历史",
++  "alerts": "币种警报",
++  "analysis": "分析",
++  "diary": "交易日记",
++
++  "totalAssets": "总资产",
++  "todayReturn": "今日收益",
++  "activeAlerts": "活跃警报",
++  "previousDay": "较前日",
++  "setAlerts": "设置警报",
++  "alertsTriggered": "个警报触发",
++
++  "popularCoins": "热门币种价格",
++  "lastUpdated": "更新时间",
++  "refresh": "刷新",
++  "priceLoadError": "加载价格信息失败",
++  "realTimePrices": "查看实时币种价格",
++  "justNow": "刚刚",
++
++  "recentTrades": "最近交易",
++  "recentTradesDesc": "查看您的最近交易历史",
++  "noTrades": "暂无交易记录",
++  "noTradesDesc": "在交易历史标签中添加您的第一笔交易",
++  "addFirstTrade": "添加交易",
++
++  "newTrade": "添加新交易",
++  "noTradesData": "无交易历史",
++  "addFirstTradeDesc": "添加您的第一笔交易",
++
++  "newAlert": "添加新警报",
++  "firstAlert": "添加第一个警报",
++  "triggeredAlerts": "触发的警报",
++  "clearAll": "全部清除",
++  "activeAlertsList": "活跃警报",
++  "noAlertsSet": "未设置警报",
++  "noAlertsDesc": "设置币种价格警报",
++  "alertTriggered": "警报触发",
++  "target": "目标",
++  "current": "当前",
++  "created": "创建",
++  "above": "以上",
++  "below": "以下",
++  "triggered": "已触发",
++  "active": "活跃",
++  "inactive": "非活跃",
++
++  "addNewAlert": "添加新警报",
++  "selectCoin": "选择币种",
++  "selectCoinPlaceholder": "请选择币种",
++  "currentPrice": "当前价格",
++  "alertCondition": "警报条件",
++  "priceAbove": "价格以上",
++  "priceBelow": "价格以下",
++  "targetPrice": "目标价格 (USD)",
++  "targetPricePlaceholder": "输入目标价格",
++  "cancel": "取消",
++  "addAlert": "添加警报",
++
++  "selectCoinError": "请选择币种",
++  "validPriceError": "请输入有效价格",
++
++  "noAnalysisData": "无分析数据",
++  "noAnalysisDesc": "交易数据积累后将显示分析结果",
++  "totalTrades": "总交易数",
++  "completedTradesBasis": "按已完成交易计",
++  "cumulativePnL": "累计盈亏",
++  "winRate": "胜率"
++}
+\ No newline at end of file
+diff -ruN orig/trading-diary-pro-main/src/main.jsx trading-diary-pro/trading-diary-pro-main/src/main.jsx
+--- orig/trading-diary-pro-main/src/main.jsx	2025-08-11 00:43:06.000000000 +0000
++++ trading-diary-pro/trading-diary-pro-main/src/main.jsx	2025-08-11 02:20:02.218865225 +0000
+@@ -1,10 +1,16 @@
+ import { StrictMode } from 'react'
+ import { createRoot } from 'react-dom/client'
+ import './index.css'
++// Initialise internationalisation. This import must run before the app renders
++// so that translations are loaded and the language detector can run.
++import './i18n.js'
++import { HelmetProvider } from 'react-helmet-async'
+ import App from './App.jsx'
+ 
+ createRoot(document.getElementById('root')).render(
+   <StrictMode>
+-    <App />
++    <HelmetProvider>
++      <App />
++    </HelmetProvider>
+   </StrictMode>,
+ )
