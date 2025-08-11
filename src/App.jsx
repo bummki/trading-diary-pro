@@ -10,7 +10,7 @@ import { useKPI } from './hooks/useKPI'
 import { AddAlertModal } from './components/AddAlertModal'
 import AddTradeModalV2 from './components/AddTradeModalV2'
 import DiaryModal from './components/DiaryModal'
-import { LanguageSelector } from './components/LanguageSelector'
+import { LanguageDropdown } from './components/LanguageDropdown'
 import './App.css'
 
 function App() {
@@ -96,11 +96,11 @@ function App() {
     { id: 'trades', label: t('trades') },
     { id: 'alerts', label: t('alerts') },
     { id: 'analysis', label: t('analysis') },
-    { id: 'diary', label: '매매일지' }
+    { id: 'diary', label: t('tradingDiary') }
   ]
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('ko-KR', {
+    return new Intl.NumberFormat(t("locale"), {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 2,
@@ -126,7 +126,7 @@ function App() {
           </div>
           
           <div className="flex items-center space-x-3">
-            <LanguageSelector />
+            <LanguageDropdown />
             <Button variant="outline" size="sm" className="hidden md:flex" onClick={() => setShowAddAlertModal(true)}>
               <Bell className="w-4 h-4 mr-2" />
               {t('alertSettings')}
@@ -169,25 +169,25 @@ function App() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-600">총 거래수</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-600">{t("totalTrades")}</CardTitle>
                   <BarChart3 className="w-4 h-4 text-gray-400" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{kpi.totalTrades}</div>
-                  <p className="text-xs text-gray-500 mt-1">완결 거래 기준</p>
+                  <p className="text-xs text-gray-500 mt-1">{t("completedTrades")}</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-600">누적 손익</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-600">{t("cumulativePnl")}</CardTitle>
                   <TrendingUp className="w-4 h-4 text-gray-400" />
                 </CardHeader>
                 <CardContent>
                   <div className={`text-2xl font-bold ${kpi.totalPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {kpi.totalPnl >= 0 ? '+' : ''}{kpi.totalPnl.toFixed(0)} KRW
+                    {kpi.totalPnl >= 0 ? '+' : ''}{kpi.totalPnl.toFixed(0)} {t("currency")}
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">승률: {kpi.winRate.toFixed(1)}%</p>
+                  <p className="text-xs text-gray-500 mt-1">{t("winRate")}: {kpi.winRate.toFixed(1)}%</p>
                 </CardContent>
               </Card>
 
@@ -213,40 +213,40 @@ function App() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-gray-600">평균 손익</CardTitle>
+                    <CardTitle className="text-sm font-medium text-gray-600">{t("avgPnl")}</CardTitle>
                     <BarChart3 className="w-4 h-4 text-gray-400" />
                   </CardHeader>
                   <CardContent>
                     <div className={`text-2xl font-bold ${kpi.avgPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {kpi.avgPnl >= 0 ? '+' : ''}{kpi.avgPnl.toFixed(0)} KRW
+                      {kpi.avgPnl >= 0 ? '+' : ''}{kpi.avgPnl.toFixed(0)} {t("currency")}
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">거래당 평균</p>
+                    <p className="text-xs text-gray-500 mt-1">{t("avgPerTrade")}</p>
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-gray-600">최고 수익</CardTitle>
+                    <CardTitle className="text-sm font-medium text-gray-600">{t("maxProfit")}</CardTitle>
                     <TrendingUp className="w-4 h-4 text-green-400" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-green-600">
-                      +{kpi.maxProfit.toFixed(0)} KRW
+                      +{kpi.maxProfit.toFixed(0)} {t("currency")}
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">단일 거래 최고</p>
+                    <p className="text-xs text-gray-500 mt-1">{t("singleTradeMax")}</p>
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-gray-600">최대 손실</CardTitle>
+                    <CardTitle className="text-sm font-medium text-gray-600">{t("maxLoss")}</CardTitle>
                     <TrendingDown className="w-4 h-4 text-red-400" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-red-600">
-                      {kpi.maxLoss.toFixed(0)} KRW
+                      {kpi.maxLoss.toFixed(0)} {t("currency")}
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">단일 거래 최대</p>
+                    <p className="text-xs text-gray-500 mt-1">{t("singleTradeMax")}</p>
                   </CardContent>
                 </Card>
               </div>
@@ -255,10 +255,10 @@ function App() {
             {/* Coin Prices Section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">인기 코인 가격</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{t("popularCoins")}</h2>
                 <div className="flex items-center space-x-3">
                   <p className="text-sm text-gray-500">
-                    {lastUpdated ? `업데이트: ${lastUpdated.toLocaleTimeString('ko-KR')}` : '실시간 코인 가격을 확인하세요'}
+                    {lastUpdated ? `${t("updated")}: ${lastUpdated.toLocaleTimeString(t("locale"))}` : t("realTimePrices")}
                   </p>
                   <Button 
                     variant="outline" 
@@ -268,7 +268,7 @@ function App() {
                     className="flex items-center space-x-1"
                   >
                     <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                    <span>새로고침</span>
+                    <span>{t("refresh")}</span>
                   </Button>
                 </div>
               </div>
@@ -277,7 +277,7 @@ function App() {
                 <Card className="border-red-200 bg-red-50">
                   <CardContent className="p-4">
                     <p className="text-red-600 text-sm">
-                      가격 정보를 불러오는데 실패했습니다: {error}
+                      {t("priceLoadError")}: {error}
                     </p>
                   </CardContent>
                 </Card>
@@ -326,8 +326,8 @@ function App() {
                         <div className="text-xl font-bold text-gray-900">
                           {formatPrice(coin.price)}
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">
-                          업데이트: {coin.lastUpdated ? new Date(coin.lastUpdated * 1000).toLocaleTimeString('ko-KR') : '방금 전'}
+                      <p className="text-xs text-gray-500 mt-1">
+                          {t("updated")}: {coin.lastUpdated ? new Date(coin.lastUpdated * 1000).toLocaleTimeString(t("locale")) : t("justNow")}
                         </p>
                       </CardContent>
                     </Card>
@@ -339,8 +339,8 @@ function App() {
             {/* Recent Trades Section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">최근 거래</h2>
-                <p className="text-sm text-gray-500">최근 거래 내역을 확인하세요</p>
+                <h2 className="text-lg font-semibold text-gray-900">{t("recentTrades")}</h2>
+                <p className="text-sm text-gray-500">{t("recentTradesDesc")}</p>
               </div>
 
               <Card>
@@ -348,10 +348,10 @@ function App() {
                   <div className="text-gray-400 mb-4">
                     <BarChart3 className="w-12 h-12 mx-auto" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">아직 거래 기록이 없습니다</h3>
-                  <p className="text-gray-500 mb-4">거래 내역 탭에서 첫 번째 거래를 추가해보세요</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t("noTrades")}</h3>
+                  <p className="text-gray-500 mb-4">{t("noTradesDesc")}</p>
                   <Button onClick={() => setActiveTab('trades')}>
-                    거래 추가하기
+                    {t("addFirstTrade")}
                   </Button>
                 </CardContent>
               </Card>
@@ -362,10 +362,10 @@ function App() {
         {activeTab === 'trades' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">거래 내역</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{t("trades")}</h2>
               <Button onClick={() => setShowAddTradeModal(true)}>
                 <Plus className="w-4 h-4 mr-2" />
-                새 거래 추가
+                {t("newTrade")}
               </Button>
             </div>
 
@@ -374,7 +374,7 @@ function App() {
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="text-2xl font-bold text-gray-900">{kpi.totalTrades}</div>
-                  <p className="text-xs text-gray-500">총 거래수</p>
+                  <p className="text-xs text-gray-500">{t("totalTrades")}</p>
                 </CardContent>
               </Card>
               <Card>
@@ -382,13 +382,13 @@ function App() {
                   <div className={`text-2xl font-bold ${kpi.totalPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {kpi.totalPnl >= 0 ? '+' : ''}{kpi.totalPnl.toFixed(0)}
                   </div>
-                  <p className="text-xs text-gray-500">누적 손익 (KRW)</p>
+                  <p className="text-xs text-gray-500">{t("cumulativePnl")} (KRW)</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="text-2xl font-bold text-blue-600">{kpi.winRate.toFixed(1)}%</div>
-                  <p className="text-xs text-gray-500">승률</p>
+                  <p className="text-xs text-gray-500">{t("winRate")}</p>
                 </CardContent>
               </Card>
               <Card>
@@ -396,19 +396,19 @@ function App() {
                   <div className={`text-2xl font-bold ${kpi.avgPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {kpi.avgPnl >= 0 ? '+' : ''}{kpi.avgPnl.toFixed(0)}
                   </div>
-                  <p className="text-xs text-gray-500">평균 손익</p>
+                  <p className="text-xs text-gray-500">{t("avgPnl")}</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="text-2xl font-bold text-green-600">+{kpi.maxProfit.toFixed(0)}</div>
-                  <p className="text-xs text-gray-500">최고 수익</p>
+                  <p className="text-xs text-gray-500">{t("maxProfit")}</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="text-2xl font-bold text-red-600">{kpi.maxLoss.toFixed(0)}</div>
-                  <p className="text-xs text-gray-500">최대 손실</p>
+                  <p className="text-xs text-gray-500">{t("maxLoss")}</p>
                 </CardContent>
               </Card>
             </div>
@@ -424,7 +424,7 @@ function App() {
                   <p className="text-gray-500 mb-4">첫 번째 거래를 추가해보세요</p>
                   <Button onClick={() => setShowAddTradeModal(true)}>
                     <Plus className="w-4 h-4 mr-2" />
-                    거래 추가하기
+                    {t("addFirstTrade")}
                   </Button>
                 </CardContent>
               </Card>
