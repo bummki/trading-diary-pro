@@ -74,6 +74,10 @@ function App() {
     localStorage.setItem('diaryEntries', JSON.stringify(diaryEntries))
   }, [diaryEntries])
 
+  const deleteTrade = (id) => {
+    setTrades(prev => prev.filter(trade => trade.id !== id))
+  }
+
   const addTrade = (trade) => {
     setTrades(prev => [trade, ...prev])
   }
@@ -481,6 +485,9 @@ function App() {
                             </div>
                           )}
                         </div>
+                        <Button variant="ghost" size="icon" onClick={() => deleteTrade(trade.id)}>
+                          <Trash2 className="w-4 h-4 text-red-500" />
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
