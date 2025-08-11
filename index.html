@@ -1,6 +1,6 @@
-<!doctype html>
-<html lang="en">
-  <head>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -20,9 +20,511 @@
     <meta name="geo.region" content="KR">
     <!-- AdSense 자동 광고 -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2695727848475573" crossorigin="anonymous"></script>
-  </head>
-  <body class="overflow-x-hidden" style="touch-action: pan-y; overscroll-behavior-x: none;">
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+    
+    <!-- 자동 광고 활성화 -->
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-2695727848475573",
+            enable_page_level_ads: true
+        });
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 헤더 스타일 */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        /* 다국어 언어 선택 스타일 */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 20px;
+            z-index: 1000;
+            min-width: 280px;
+            border: 2px solid #667eea;
+        }
+        
+        .language-selector h4 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 16px;
+            text-align: center;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .language-option {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .language-option:hover {
+            background-color: #f0f4ff;
+            transform: translateX(5px);
+        }
+        
+        .language-option input[type="checkbox"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+            accent-color: #667eea;
+        }
+        
+        .language-option label {
+            cursor: pointer;
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+        }
+        
+        .language-flag {
+            width: 24px;
+            height: 16px;
+            margin-right: 10px;
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .language-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            z-index: 1001;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .language-toggle:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .language-toggle.hidden {
+            display: none;
+        }
+        
+        .selected-languages {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .selected-languages h5 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        
+        .selected-languages p {
+            margin: 0;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        /* 메인 콘텐츠 스타일 */
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .feature-card p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        /* CTA 섹션 */
+        .cta-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .cta-section h2 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .cta-section p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        
+        /* 푸터 */
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .footer p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .feature-card {
+                padding: 20px;
+            }
+            
+            .feature-card h3 {
+                font-size: 1.5rem;
+            }
+            
+            .cta-section h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 다국어 언어 선택 UI -->
+    <button class="language-toggle" onclick="toggleLanguageSelector()">
+        🌍 언어 선택
+    </button>
+    
+    <div class="language-selector" id="languageSelector" style="display: none;">
+        <h4>🌍 언어 선택</h4>
+        <div class="language-option">
+            <input type="checkbox" id="ko" checked>
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAyNCAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE2IiBmaWxsPSIjRkZGRkZGIi8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iOCIgcj0iNCIgZmlsbD0iIzAwMDAwMCIvPgo8cGF0aCBkPSJNMTIgMTJMMTAgMTBIMTRMMTIgMTJaIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPgo=" class="language-flag" alt="한국어">
+            <label for="ko">한국어 (Korean)</label>
+        </div>
+        <div class="language-option">
+            <input type="checkbox" id="en">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAyNCAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE2IiBmaWxsPSIjMDAyNDdGIi8+CjxwYXRoIGQ9Ik0wIDBIMjRWN0gxMlYwSDBaIiBmaWxsPSIjRkZGRkZGIi8+CjxwYXRoIGQ9Ik0wIDlIMjRWMThIMFY5WiIgZmlsbD0iI0ZGRkZGRiIvPgo8cGF0aCBkPSJNMTIgMTJMMTAgMTBIMTRMMTIgMTJaIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPgo=" class="language-flag" alt="English">
+            <label for="en">English (영어)</label>
+        </div>
+        <div class="language-option">
+            <input type="checkbox" id="ja">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAyNCAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE2IiBmaWxsPSIjRkZGRkZGIi8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iOCIgcj0iNCIgZmlsbD0iIzAwMDAwMCIvPgo8cGF0aCBkPSJNMTIgMTJMMTAgMTBIMTRMMTIgMTJaIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPgo=" class="language-flag" alt="日本語">
+            <label for="ja">日本語 (일본어)</label>
+        </div>
+        <div class="language-option">
+            <input type="checkbox" id="zh">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAyNCAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE2IiBmaWxsPSIjRkZGRkZGIi8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iOCIgcj0iNCIgZmlsbD0iIzAwMDAwMCIvPgo8cGF0aCBkPSJNMTIgMTJMMTAgMTBIMTRMMTIgMTJaIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPgo=" class="language-flag" alt="中文">
+            <label for="zh">中文 (중국어)</label>
+        </div>
+        <div class="language-option">
+            <input type="checkbox" id="es">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAyNCAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE2IiBmaWxsPSIjRkZGRkZGIi8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iOCIgcj0iNCIgZmlsbD0iIzAwMDAwMCIvPgo8cGF0aCBkPSJNMTIgMTJMMTAgMTBIMTRMMTIgMTJaIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPgo=" class="language-flag" alt="Español">
+            <label for="es">Español (스페인어)</label>
+        </div>
+        
+        <div class="selected-languages">
+            <h5>✅ 선택된 언어</h5>
+            <p id="selectedLanguagesText">한국어</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- 헤더 -->
+        <header class="header">
+            <h1>🚀 TradingDiaryPro</h1>
+            <p>코인 거래소 가격 알람 및 매매일지로 효율적인 트레이딩을 시작하세요</p>
+        </header>
+        
+        <!-- 메인 콘텐츠 -->
+        <main class="main-content">
+            <div class="feature-card">
+                <span class="feature-icon">📊</span>
+                <h3>실시간 가격 알람</h3>
+                <p>코인 거래소의 실시간 가격을 모니터링하고 설정한 가격에 도달하면 즉시 알림을 받으세요. 중요한 가격 변동을 놓치지 않습니다.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">📝</span>
+                <h3>체계적인 매매일지</h3>
+                <p>모든 거래를 체계적으로 기록하고 분석하여 투자 성과를 추적하세요. 패턴 분석을 통해 더 나은 투자 결정을 내릴 수 있습니다.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">💼</span>
+                <h3>포트폴리오 관리</h3>
+                <p>보유한 코인의 현황과 수익률을 한눈에 파악하세요. 자산 분산과 리스크 관리를 위한 필수 도구입니다.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">📈</span>
+                <h3>시장 분석 도구</h3>
+                <p>다양한 차트와 기술적 지표를 활용하여 시장 동향을 분석하세요. 데이터 기반의 객관적인 투자 판단을 지원합니다.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🌍</span>
+                <h3>다국어 지원</h3>
+                <p>한국어, 영어, 일본어, 중국어, 스페인어 등 다양한 언어를 지원하여 글로벌 사용자들이 편리하게 이용할 수 있습니다.</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🔔</span>
+                <h3>맞춤형 알림</h3>
+                <p>가격 알람, 뉴스 알림, 시장 변동 알림 등 원하는 정보를 선택적으로 받아보세요. 개인화된 트레이딩 환경을 제공합니다.</p>
+            </div>
+        </main>
+        
+        <!-- CTA 섹션 -->
+        <section class="cta-section">
+            <h2>지금 바로 시작하세요!</h2>
+            <p>TradingDiaryPro와 함께 체계적이고 효율적인 트레이딩을 경험해보세요.</p>
+            <a href="https://trading-diary-pro.com/" class="cta-button" target="_blank" rel="dofollow">
+                🚀 무료로 시작하기
+            </a>
+        </section>
+        
+        <!-- 푸터 -->
+        <footer class="footer">
+            <p>&copy; 2025 TradingDiaryPro. All rights reserved.</p>
+            <p>개발: <a href="https://github.com/bummki/trading-diary-pro" target="_blank">GitHub Repository</a></p>
+            <p>배포: <a href="https://trading-diary-pro.vercel.app" target="_blank">Vercel</a></p>
+        </footer>
+    </div>
+    
+    <!-- 다국어 언어 선택 JavaScript -->
+    <script>
+        // 언어 선택 상태 관리
+        let selectedLanguages = ['ko'];
+        
+        // 언어 선택기 토글
+        function toggleLanguageSelector() {
+            const selector = document.getElementById('languageSelector');
+            const toggle = document.querySelector('.language-toggle');
+            
+            if (selector.style.display === 'none') {
+                selector.style.display = 'block';
+                toggle.classList.add('hidden');
+            } else {
+                selector.style.display = 'none';
+                toggle.classList.remove('hidden');
+            }
+        }
+        
+        // 언어 선택 변경 감지
+        function updateSelectedLanguages() {
+            const checkboxes = document.querySelectorAll('.language-option input[type="checkbox"]');
+            selectedLanguages = [];
+            
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    selectedLanguages.push(checkbox.id);
+                }
+            });
+            
+            updateSelectedLanguagesText();
+            saveLanguagePreferences();
+        }
+        
+        // 선택된 언어 텍스트 업데이트
+        function updateSelectedLanguagesText() {
+            const textElement = document.getElementById('selectedLanguagesText');
+            const languageNames = {
+                'ko': '한국어',
+                'en': 'English',
+                'ja': '日本語',
+                'zh': '中文',
+                'es': 'Español'
+            };
+            
+            const selectedNames = selectedLanguages.map(lang => languageNames[lang]);
+            textElement.textContent = selectedNames.join(', ');
+        }
+        
+        // 언어 설정 저장 (로컬 스토리지)
+        function saveLanguagePreferences() {
+            localStorage.setItem('selectedLanguages', JSON.stringify(selectedLanguages));
+        }
+        
+        // 언어 설정 불러오기 (로컬 스토리지)
+        function loadLanguagePreferences() {
+            const saved = localStorage.getItem('selectedLanguages');
+            if (saved) {
+                selectedLanguages = JSON.parse(saved);
+                
+                // 체크박스 상태 복원
+                selectedLanguages.forEach(lang => {
+                    const checkbox = document.getElementById(lang);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+                
+                updateSelectedLanguagesText();
+            }
+        }
+        
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 언어 설정 불러오기
+            loadLanguagePreferences();
+            
+            // 체크박스 이벤트 리스너 추가
+            const checkboxes = document.querySelectorAll('.language-option input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateSelectedLanguages);
+            });
+            
+            // 최소 하나의 언어는 선택되어야 함
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const checkedBoxes = document.querySelectorAll('.language-option input[type="checkbox"]:checked');
+                    if (checkedBoxes.length === 0) {
+                        this.checked = true; // 최소 하나는 선택되도록
+                    }
+                });
+            });
+        });
+        
+        // 외부 클릭 시 언어 선택기 닫기
+        document.addEventListener('click', function(event) {
+            const selector = document.getElementById('languageSelector');
+            const toggle = document.querySelector('.language-toggle');
+            
+            if (!selector.contains(event.target) && !toggle.contains(event.target)) {
+                selector.style.display = 'none';
+                toggle.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
 </html>
+
