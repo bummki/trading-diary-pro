@@ -21,6 +21,8 @@ const resources = {
       
       // Dashboard Cards
       totalAssets: '총 자산',
+      totalTrades: '총 거래',
+      cumulativePnl: '누적 손익',
       todayReturn: '오늘 수익률',
       activeAlerts: '활성 알람',
       previousDay: '전일 대비',
@@ -28,6 +30,14 @@ const resources = {
       alertsTriggered: '개 알람 발생',
       currency: 'KRW',
       locale: 'ko-KR',
+      completedTrades: '완료된 거래',
+      winRate: '승률',
+      avgPnl: '평균 손익',
+      avgPerTrade: '거래당 평균',
+      maxProfit: '최대 수익',
+      maxLoss: '최대 손실',
+      singleTradeMax: '단일 거래 최대',
+      tradingDiary: '매매일지',
       
       // Coin Prices
       popularCoins: '인기 코인 가격',
@@ -107,6 +117,8 @@ const resources = {
       
       // Dashboard Cards
       totalAssets: 'Total Assets',
+      totalTrades: 'Total Trades',
+      cumulativePnl: 'Cumulative PnL',
       todayReturn: 'Today\'s Return',
       activeAlerts: 'Active Alerts',
       previousDay: 'vs Previous Day',
@@ -114,6 +126,14 @@ const resources = {
       alertsTriggered: ' alerts triggered',
       currency: 'USD',
       locale: 'en-US',
+      completedTrades: 'completed trades',
+      winRate: 'Win Rate',
+      avgPnl: 'Avg. PnL',
+      avgPerTrade: 'Avg. per trade',
+      maxProfit: 'Max Profit',
+      maxLoss: 'Max Loss',
+      singleTradeMax: 'Single trade max',
+      tradingDiary: 'Trading Diary',
       
       // Coin Prices
       popularCoins: 'Popular Coin Prices',
@@ -193,6 +213,8 @@ const resources = {
       
       // Dashboard Cards
       totalAssets: '总资产',
+      totalTrades: '总交易',
+      cumulativePnl: '累计盈亏',
       todayReturn: '今日收益',
       activeAlerts: '活跃警报',
       previousDay: '较前日',
@@ -200,6 +222,14 @@ const resources = {
       alertsTriggered: "个警报触发",
       currency: "CNY",
       locale: "zh-CN",
+      completedTrades: '已完成交易',
+      winRate: '胜率',
+      avgPnl: '平均盈亏',
+      avgPerTrade: '每笔交易平均',
+      maxProfit: '最大利润',
+      maxLoss: '最大亏损',
+      singleTradeMax: '单笔交易最大',
+      tradingDiary: '交易日记',
       
       // Coin Prices
       popularCoins: '热门币种价格',
@@ -279,6 +309,8 @@ const resources = {
       
       // Dashboard Cards
       totalAssets: '総資産',
+      totalTrades: '総取引',
+      cumulativePnl: '累積損益',
       todayReturn: '今日の収益',
       activeAlerts: 'アクティブアラート',
       previousDay: '前日比',
@@ -286,6 +318,14 @@ const resources = {
       alertsTriggered: "つのアラートが発生",
       currency: "JPY",
       locale: "ja-JP",
+      completedTrades: '完了した取引',
+      winRate: '勝率',
+      avgPnl: '平均損益',
+      avgPerTrade: '取引あたりの平均',
+      maxProfit: '最大利益',
+      maxLoss: '最大損失',
+      singleTradeMax: '単一取引の最大',
+      tradingDiary: '取引日記',
       
       // Coin Prices
       popularCoins: '人気コイン価格',
@@ -365,6 +405,8 @@ const resources = {
       
       // Dashboard Cards
       totalAssets: 'Activos Totales',
+      totalTrades: 'Operaciones Totales',
+      cumulativePnl: 'Ganancia/Pérdida Acumulada',
       todayReturn: 'Rendimiento de Hoy',
       activeAlerts: 'Alertas Activas',
       previousDay: 'vs Día Anterior',
@@ -372,6 +414,14 @@ const resources = {
       alertsTriggered: " alertas activadas",
       currency: "USD",
       locale: "es-ES",
+      completedTrades: 'operaciones completadas',
+      winRate: 'Tasa de Ganancia',
+      avgPnl: 'Ganancia/Pérdida Promedio',
+      avgPerTrade: 'Promedio por operación',
+      maxProfit: 'Máxima Ganancia',
+      maxLoss: 'Máxima Pérdida',
+      singleTradeMax: 'Máximo por operación única',
+      tradingDiary: 'Diario de Trading',
       
       // Coin Prices
       popularCoins: 'Precios de Criptomonedas Populares',
