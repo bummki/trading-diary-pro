@@ -12,7 +12,7 @@ const AddTradeModalV2 = ({ isOpen, onClose, onAddTrade }) => {
     qtyOrAmount: '',
     price: '',
     fee: '',
-    note: '',
+    memo: '',
     indicators: {
       ma: false,
       rsi: false,
@@ -176,7 +176,7 @@ const AddTradeModalV2 = ({ isOpen, onClose, onAddTrade }) => {
       qtyOrAmount: '',
       price: '',
       fee: '',
-      note: '',
+      memo: '',
       indicators: {
         ma: false,
         rsi: false,
@@ -399,8 +399,8 @@ const AddTradeModalV2 = ({ isOpen, onClose, onAddTrade }) => {
             <label className="block text-sm font-medium mb-2">메모 (전략·근거)</label>
             <textarea
               placeholder="거래 전략이나 근거를 입력하세요"
-              value={formData.note}
-              onChange={(e) => handleInputChange('note', e.target.value)}
+              value={formData.memo}
+              onChange={(e) => handleInputChange("memo", e.target.value)}
               className="w-full p-2 border rounded-lg h-20 resize-none"
             />
           </div>
