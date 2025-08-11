@@ -1,17 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save, Download, Upload } from 'lucide-react';
 import { Button } from './ui/button';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
 const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
   const [formData, setFormData] = useState({
     date: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
-    title: '',
-    category: '매매전략',
-    content: '',
-    keywords: ''
+    title: "",
+    category: "",
+    content: "",
+    keywords: "",
+    linkedStocks: [],
+    todoList: []
   });
 
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
   const [editingId, setEditingId] = useState(null);
+
+  // 주식 종목 자동 인식 함수
+  const extractStockSymbols = (text) => {
+    const stockPatterns = [
+      // 한국 주식 (한글 종목명)
+      /삼성전자|LG전자|SK하이닉스|네이버|카카오|현대차|기아|포스코|NAVER|KAKAO/gi,
+      // 미국 주식 (심볼)
+      /\b(AAPL|MSFT|GOOGL|AMZN|TSLA|META|NVDA|AMD|INTC|NFLX|UBER|ZOOM|PYPL|SQ|ROKU|SHOP|CRM|ADBE|ORCL|IBM)\b/gi,
+      // 암호화폐
+      /비트코인|이더리움|리플|도지코인|BTC|ETH|XRP|DOGE|ADA|DOT|LINK|LTC|BCH|XLM|UNI|AAVE|SUSHI|COMP/gi
+    ];
+
+    const matches = new Set();
+    stockPatterns.forEach(pattern => {
+      const found = text.match(pattern);
+      if (found) {
+        found.forEach(match => matches.add(match.toUpperCase()));
+      }
+    });
+
+    return Array.from(matches);
+  };
 
   const categories = [
     '매매전략',
@@ -23,10 +51,16 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
   ];
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setFormData(prev => {
+      const newState = {
+        ...prev,
+        [field]: value
+      };
+      if (field === 'content') {
+        newState.linkedStocks = extractStockSymbols(value);
+      }
+      return newState;
+    });
   };
 
   const handleSubmit = (e) => {
@@ -40,7 +74,7 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
     const diary = {
       id: editingId || Date.now().toString(),
       ...formData,
-      keywords: formData.keywords.split(',').map(k => k.trim()).filter(k => k),
+      keywords: formData.keywords.split(",").map(k => k.trim()).filter(k => k),
       createdAt: editingId ? diaryEntries.find(d => d.id === editingId)?.createdAt : new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -52,12 +86,14 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
   const resetForm = () => {
     setFormData({
       date: new Date().toISOString().slice(0, 10),
-      title: '',
-      category: '매매전략',
-      content: '',
-      keywords: ''
+      title: "",
+      category: "",
+      content: "",
+      keywords: "",
+      linkedStocks: [],
+      todoList: []
     });
-    setEditingId(null);
+          setEditingId(null);
   };
 
   const handleEdit = (diary) => {
@@ -66,46 +102,17 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
       title: diary.title,
       category: diary.category,
       content: diary.content,
-      keywords: Array.isArray(diary.keywords) ? diary.keywords.join(', ') : diary.keywords || ''
+      keywords: Array.isArray(diary.keywords) ? diary.keywords.join(", ") : diary.keywords || "",
+      linkedStocks: diary.linkedStocks || [],
+      todoList: diary.todoList || []
     });
     setEditingId(diary.id);
   };
 
   const handleDelete = (id) => {
-    if (confirm('정말로 이 일지를 삭제하시겠습니까?')) {
+    if (confirm("정말로 이 일지를 삭제하시겠습니까?")) {
       onSaveDiary(null, id); // null을 전달하여 삭제 표시
     }
-  };
-
-  const exportToCSV = () => {
-    if (diaryEntries.length === 0) {
-      alert('내보낼 일지가 없습니다.');
-      return;
-    }
-
-    const headers = ['날짜', '제목', '카테고리', '내용', '키워드', '생성일', '수정일'];
-    const csvContent = [
-      headers.join(','),
-      ...diaryEntries.map(entry => [
-        entry.date,
-        `"${entry.title.replace(/"/g, '""')}"`,
-        entry.category,
-        `"${entry.content.replace(/"/g, '""')}"`,
-        `"${Array.isArray(entry.keywords) ? entry.keywords.join(', ') : entry.keywords || ''}"`,
-        entry.createdAt,
-        entry.updatedAt
-      ].join(','))
-    ].join('\\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `trading_diary_${new Date().toISOString().slice(0, 10)}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   const importFromCSV = (event) => {
@@ -133,10 +140,10 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
             const entry = {
               id: Date.now().toString() + i,
               date: values[0],
-              title: values[1].replace(/^"|"$/g, '').replace(/""/g, '"'),
-              category: values[2],
-              content: values[3].replace(/^"|"$/g, '').replace(/""/g, '"'),
-              keywords: values[4].replace(/^"|"$/g, '').split(', ').filter(k => k),
+              title: "",values[1].replace(/^"|"$/g, '').replace(/""/g, '"'),
+              category: "",values[2],
+              content: "",values[3].replace(/^"|"$/g, '').replace(/""/g, '"'),
+              keywords: "",values[4].replace(/^"|"$/g, '').split(', ').filter(k => k),
               createdAt: values[5],
               updatedAt: values[6]
             };
@@ -247,12 +254,27 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
                 <div>
                   <label className="block text-sm font-medium mb-2">내용</label>
                   <textarea
-                    placeholder="매매 경험, 학습 내용, 시장 분석 등을 자유롭게 작성하세요"
+                    placeholder="매매 경험, 학습 내용, 시장 분석 등을 자유롭게 작성하세요 (예: 삼성전자, 애플)"
                     value={formData.content}
-                    onChange={(e) => handleInputChange('content', e.target.value)}
+                    onChange={(e) => handleInputChange(\'content\', e.target.value)}
                     className="w-full p-2 border rounded-lg h-40 resize-none"
                     required
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">연결된 주식 종목</label>
+                  <div className="flex flex-wrap gap-2 p-2 border rounded-lg bg-gray-50 min-h-[38px]">
+                    {formData.linkedStocks && formData.linkedStocks.length > 0 ? (
+                      formData.linkedStocks.map((stock, index) => (
+                        <span key={index} className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                          {stock}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-sm text-gray-500">노트 내용에서 주식 종목을 자동으로 인식합니다.</span>
+                    )}
+                  </div>
                 </div>
 
                 <div>
@@ -304,10 +326,17 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
                             </div>
                             <p className="text-sm text-gray-600 mb-2">
                               {entry.content.length > 100 
-                                ? entry.content.substring(0, 100) + '...' 
+                                ? entry.content.substring(0, 100) + '...'
                                 : entry.content
                               }
                             </p>
+                            {entry.linkedStocks && entry.linkedStocks.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {entry.linkedStocks.map((stock, idx) => (
+                                  <span key={idx} className="text-xs bg-gray-200 px-1.5 py-0.5 rounded-full">{stock}</span>
+                                ))}
+                              </div>
+                            )}
                             <div className="flex items-center justify-between text-xs text-gray-500">
                               <span>{entry.date}</span>
                               {entry.keywords && entry.keywords.length > 0 && (
@@ -340,6 +369,22 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
                             </Button>
                           </div>
                         </div>
+                        {entry.todoList && entry.todoList.length > 0 && (
+                          <div className="mt-3 pt-3 border-t border-gray-100">
+                            <h4 className="text-sm font-medium mb-2">할 일 목록</h4>
+                            {entry.todoList.map((todo, idx) => (
+                              <div key={idx} className="flex items-center text-sm text-gray-700">
+                                <input
+                                  type="checkbox"
+                                  checked={todo.completed}
+                                  readOnly
+                                  className="mr-2"
+                                />
+                                <span className={`${todo.completed ? "line-through text-gray-500" : ""}`}>{todo.text}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     ))
                 )}
@@ -353,4 +398,5 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
 };
 
 export default DiaryModal;
+
 
