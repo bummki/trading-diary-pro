@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://trading-diary-pro.com/sitemap.xml
-
