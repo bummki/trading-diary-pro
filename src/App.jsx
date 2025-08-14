@@ -11,6 +11,7 @@ import { AddAlertModal } from './components/AddAlertModal'
 import AddTradeModalV2 from './components/AddTradeModalV2'
 import DiaryModal from './components/DiaryModal'
 import { LanguageSelector } from './components/LanguageDropdown'
+import AppFooter from './components/AppFooter'
 import './App.css'
 
 function App() {
@@ -349,7 +350,8 @@ function App() {
             {/* Recent Trades Section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">{t("recentTrades")}</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{t("recentTrades")}
+                </h2>
                 <p className="text-sm text-gray-500">{t("recentTradesDesc")}</p>
               </div>
 
@@ -383,121 +385,113 @@ function App() {
             <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-gray-900">{kpi.totalTrades}</div>
-                  <p className="text-xs text-gray-500">{t("totalTrades")}</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4 text-center">
-                  <div className={`text-2xl font-bold ${kpi.totalPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {kpi.totalPnl >= 0 ? '+' : ''}{kpi.totalPnl.toFixed(0)}
+                  <div className="text-2xl font-bold text-green-600">
+                    {kpi.totalTrades > 0 ? `+${kpi.totalPnl.toFixed(0)} ${t("currency")}` : `0 ${t("currency")}`}
                   </div>
-                  <p className="text-xs text-gray-500">{t("cumulativePnl")} (KRW)</p>
+                  <p className="text-xs text-gray-500 mt-1">{t("cumulativePnl")}</p>
                 </CardContent>
               </Card>
+
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-blue-600">{kpi.winRate.toFixed(1)}%</div>
-                  <p className="text-xs text-gray-500">{t("winRate")}</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4 text-center">
-                  <div className={`text-2xl font-bold ${kpi.avgPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {kpi.avgPnl >= 0 ? '+' : ''}{kpi.avgPnl.toFixed(0)}
+                  <div className="text-2xl font-bold text-blue-600">
+                    {kpi.totalTrades > 0 ? `${kpi.winRate.toFixed(1)}%` : `0.0%`}
                   </div>
-                  <p className="text-xs text-gray-500">{t("avgPnl")}</p>
+                  <p className="text-xs text-gray-500 mt-1">{t("winRate")}</p>
                 </CardContent>
               </Card>
+
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-green-600">+{kpi.maxProfit.toFixed(0)}</div>
-                  <p className="text-xs text-gray-500">{t("maxProfit")}</p>
+                  <div className="text-2xl font-bold text-purple-600">
+                    {kpi.totalTrades > 0 ? `${kpi.avgPnl.toFixed(0)} ${t("currency")}` : `0 ${t("currency")}`}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{t("avgPnl")}</p>
                 </CardContent>
               </Card>
+
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-red-600">{kpi.maxLoss.toFixed(0)}</div>
-                  <p className="text-xs text-gray-500">{t("maxLoss")}</p>
+                  <div className="text-2xl font-bold text-yellow-600">
+                    {kpi.totalTrades > 0 ? `${kpi.maxProfit.toFixed(0)} ${t("currency")}` : `0 ${t("currency")}`}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{t("maxProfit")}</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-red-600">
+                    {kpi.totalTrades > 0 ? `${kpi.maxLoss.toFixed(0)} ${t("currency")}` : `0 ${t("currency")}`}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{t("maxLoss")}</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-gray-600">
+                    {kpi.totalTrades}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{t("totalTrades")}</p>
                 </CardContent>
               </Card>
             </div>
 
-            {/* 거래 리스트 */}
+            {/* Trades Table */}
             {trades.length === 0 ? (
               <Card>
                 <CardContent className="p-8 text-center">
                   <div className="text-gray-400 mb-4">
                     <BarChart3 className="w-12 h-12 mx-auto" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">거래 내역이 없습니다</h3>
-                  <p className="text-gray-500 mb-4">첫 번째 거래를 추가해보세요</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t("noTradesData")}</h3>
+                  <p className="text-gray-500 mb-4">{t("addFirstTradeDesc")}</p>
                   <Button onClick={() => setShowAddTradeModal(true)}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    {t("addFirstTrade")}
+                    {t("newTrade")}
                   </Button>
                 </CardContent>
               </Card>
             ) : (
-              <div className="space-y-3">
-                {trades.map((trade) => (
-                  <Card key={trade.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-2">
-                            <Badge variant={trade.side === 'buy' ? 'default' : 'secondary'}>
-                              {trade.side === 'buy' ? '매수' : '매도'}
-                            </Badge>
-                            <span className="font-semibold text-lg">{trade.symbol}</span>
-                            <span className="text-gray-500">{trade.market === 'crypto' ? '코인' : '주식'}</span>
-                            {trade.closed && (
-                              <Badge variant={trade.realizedPnl >= 0 ? 'default' : 'destructive'} 
-                                     className={trade.realizedPnl >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                                완결
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                            <div>
-                              <p className="text-gray-500">진입가</p>
-                              <p className="font-medium">{parseFloat(trade.price).toLocaleString()} KRW</p>
-                            </div>
-                            <div>
-                              <p className="text-gray-500">수량</p>
-                              <p className="font-medium">
-                                {trade.inputType === 'quantity' 
-                                  ? parseFloat(trade.qtyOrAmount).toFixed(8)
-                                  : (parseFloat(trade.qtyOrAmount) / parseFloat(trade.price)).toFixed(8)
-                                }
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-gray-500">날짜</p>
-                              <p className="font-medium">{new Date(trade.date).toLocaleDateString('ko-KR')}</p>
-                            </div>
-                            {trade.closed && trade.realizedPnl !== null && (
-                              <div>
-                                <p className="text-gray-500">실현손익</p>
-                                <p className={`font-medium ${trade.realizedPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                  {trade.realizedPnl >= 0 ? '+' : ''}{trade.realizedPnl.toFixed(0)} KRW
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                          {trade.note && (
-                            <div className="mt-2 p-2 bg-gray-50 rounded text-sm">
-                              <p className="text-gray-700">{trade.note}</p>
-                            </div>
-                          )}
-                        </div>
-                        <Button variant="ghost" size="icon" onClick={() => deleteTrade(trade.id)}>
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+                  <thead>
+                    <tr className="bg-gray-100 border-b border-gray-200">
+                      <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">{t("date")}</th>
+                      <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">{t("type")}</th>
+                      <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">{t("symbol")}</th>
+                      <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">{t("entryPrice")}</th>
+                      <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">{t("exitPrice")}</th>
+                      <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">{t("quantity")}</th>
+                      <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">{t("pnl")}</th>
+                      <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">{t("actions")}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {trades.map((trade) => (
+                      <tr key={trade.id} className="hover:bg-gray-50">
+                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-800">{new Date(trade.date).toLocaleDateString(t("locale"))}</td>
+                        <td className="py-3 px-4 whitespace-nowrap text-sm">
+                          <Badge variant={trade.type === 'buy' ? 'default' : 'secondary'}>
+                            {trade.type === 'buy' ? t('buy') : t('sell')}
+                          </Badge>
+                        </td>
+                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-800">{trade.symbol}</td>
+                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-800">{formatPrice(trade.entryPrice)}</td>
+                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-800">{formatPrice(trade.exitPrice)}</td>
+                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-800">{trade.quantity}</td>
+                        <td className={`py-3 px-4 whitespace-nowrap text-sm font-medium ${trade.pnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {trade.pnl >= 0 ? '+' : ''}{trade.pnl.toFixed(2)} {t("currency")}
+                        </td>
+                        <td className="py-3 px-4 whitespace-nowrap text-right text-sm font-medium">
+                          <Button variant="ghost" size="sm" onClick={() => deleteTrade(trade.id)}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
@@ -506,287 +500,199 @@ function App() {
         {activeTab === 'alerts' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">코인 알람</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{t("alerts")}</h2>
               <Button onClick={() => setShowAddAlertModal(true)}>
                 <Plus className="w-4 h-4 mr-2" />
-                새 알람 추가
+                {t("newAlert")}
               </Button>
             </div>
 
-            {/* 발생한 알람 */}
             {triggeredAlerts.length > 0 && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">발생한 알람</h3>
-                  <Button variant="outline" size="sm" onClick={clearTriggeredAlerts}>
-                    모두 지우기
+              <Card className="border-red-200 bg-red-50">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-red-800">{t("triggeredAlerts")}</CardTitle>
+                  <Button variant="ghost" size="sm" onClick={clearTriggeredAlerts}>
+                    {t("clearAll")}
                   </Button>
-                </div>
-                <div className="space-y-2">
-                  {triggeredAlerts.map((alert, index) => (
-                    <Card key={index} className="border-red-200 bg-red-50">
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="flex items-center space-x-2">
-                              <span className="font-semibold">{alert.coinSymbol}</span>
-                              <span className="text-gray-600">{alert.coinName}</span>
-                              <Badge variant="destructive">알람 발생</Badge>
-                            </div>
-                            <p className="text-sm text-gray-600 mt-1">
-                              목표: ${alert.targetPrice} {alert.condition === 'above' ? '이상' : '이하'} → 
-                              현재: ${alert.currentPrice?.toFixed(2)}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {alert.triggeredAt?.toLocaleString('ko-KR')}
-                            </p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {triggeredAlerts.map((alert, index) => (
+                      <li key={index} className="text-sm text-red-700">
+                        <Bell className="w-4 h-4 inline-block mr-2" />
+                        {alert.coin} {t("alertTriggered")}! {t("target")}: {formatPrice(alert.targetPrice)}, {t("current")}: {formatPrice(alert.currentPrice)}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
             )}
 
-            {/* 활성 알람 목록 */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">활성 알람</h3>
-              {alerts.length === 0 ? (
-                <Card>
-                  <CardContent className="p-8 text-center">
-                    <div className="text-gray-400 mb-4">
-                      <Bell className="w-12 h-12 mx-auto" />
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">설정된 알람이 없습니다</h3>
-                    <p className="text-gray-500 mb-4">코인 가격 알람을 설정해보세요</p>
-                    <Button onClick={() => setShowAddAlertModal(true)}>
-                      <Plus className="w-4 h-4 mr-2" />
-                      첫 번째 알람 추가
-                    </Button>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-2">
-                  {alerts.map((alert) => {
-                    const coin = coinPrices.find(c => c.id === alert.coinId)
-                    const currentPrice = coin?.price || 0
-                    const priceDistance = alert.condition === 'above' 
-                      ? ((alert.targetPrice - currentPrice) / currentPrice * 100)
-                      : ((currentPrice - alert.targetPrice) / currentPrice * 100)
-                    
-                    return (
-                      <Card key={alert.id} className={`${alert.isTriggered ? 'border-red-200 bg-red-50' : alert.isActive ? 'border-green-200 bg-green-50' : 'border-gray-200'}`}>
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-2 mb-2">
-                                <span className="font-semibold">{alert.coinSymbol}</span>
-                                <span className="text-gray-600">{alert.coinName}</span>
-                                <Badge 
-                                  variant={alert.isTriggered ? "destructive" : alert.isActive ? "default" : "secondary"}
-                                  className={
-                                    alert.isTriggered ? "bg-red-100 text-red-800" :
-                                    alert.isActive ? "bg-green-100 text-green-800" : 
-                                    "bg-gray-100 text-gray-800"
-                                  }
-                                >
-                                  {alert.isTriggered ? "발생됨" : alert.isActive ? "활성" : "비활성"}
-                                </Badge>
-                              </div>
-                              
-                              <div className="text-sm text-gray-600 space-y-1">
-                                <p>
-                                  목표: ${alert.targetPrice} {alert.condition === 'above' ? '이상' : '이하'}
-                                </p>
-                                <p>
-                                  현재: ${currentPrice.toFixed(2)} 
-                                  {!alert.isTriggered && (
-                                    <span className={`ml-2 ${priceDistance > 0 ? 'text-orange-600' : 'text-green-600'}`}>
-                                      ({priceDistance > 0 ? '+' : ''}{priceDistance.toFixed(1)}%)
-                                    </span>
-                                  )}
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                  생성: {alert.createdAt?.toLocaleDateString('ko-KR')}
-                                </p>
-                              </div>
-                            </div>
-                            
-                            <div className="flex items-center space-x-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => toggleAlert(alert.id)}
-                                className="flex items-center space-x-1"
-                              >
-                                {alert.isActive ? (
-                                  <PowerOff className="w-4 h-4" />
-                                ) : (
-                                  <Power className="w-4 h-4" />
-                                )}
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => removeAlert(alert.id)}
-                                className="text-red-600 hover:text-red-700"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
+            <h3 className="text-xl font-bold text-gray-900">{t("activeAlertsList")}</h3>
+            {alerts.length === 0 ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <div className="text-gray-400 mb-4">
+                    <Bell className="w-12 h-12 mx-auto" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t("noAlertsSet")}</h3>
+                  <p className="text-gray-500 mb-4">{t("noAlertsDesc")}</p>
+                  <Button onClick={() => setShowAddAlertModal(true)}>
+                    {t("firstAlert")}
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+                  <thead>
+                    <tr className="bg-gray-100 border-b border-gray-200">
+                      <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">{t("coin")}</th>
+                      <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">{t("condition")}</th>
+                      <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">{t("target")}</th>
+                      <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">{t("current")}</th>
+                      <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">{t("created")}</th>
+                      <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">{t("status")}</th>
+                      <th className="py-3 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">{t("actions")}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {alerts.map((alert) => (
+                      <tr key={alert.id} className="hover:bg-gray-50">
+                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-800">{alert.coin}</td>
+                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-800">
+                          {alert.condition === 'above' ? t('priceAbove') : t('priceBelow')}
+                        </td>
+                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-800">{formatPrice(alert.targetPrice)}</td>
+                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-800">{formatPrice(coinPrices.find(c => c.symbol === alert.coin)?.price || 0)}</td>
+                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-800">{new Date(alert.createdAt).toLocaleDateString(t("locale"))}</td>
+                        <td className="py-3 px-4 whitespace-nowrap text-sm">
+                          <Badge variant={alert.triggered ? 'destructive' : (alert.active ? 'default' : 'secondary')}>
+                            {alert.triggered ? t('triggered') : (alert.active ? t('active') : t('inactive'))}
+                          </Badge>
+                        </td>
+                        <td className="py-3 px-4 whitespace-nowrap text-right text-sm font-medium">
+                          <Button variant="ghost" size="sm" onClick={() => toggleAlert(alert.id)}>
+                            {alert.active ? <PowerOff className="w-4 h-4" /> : <Power className="w-4 h-4" />}
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => removeAlert(alert.id)}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
 
         {activeTab === 'analysis' && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">분석</h2>
-            </div>
-            <Card>
-              <CardContent className="p-8 text-center">
-                <div className="text-gray-400 mb-4">
-                  <TrendingUp className="w-12 h-12 mx-auto" />
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">분석 데이터가 없습니다</h3>
-                <p className="text-gray-500">거래 데이터가 쌓이면 분석 결과를 확인할 수 있습니다</p>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {activeTab === 'diary' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">매매일지</h2>
-              <Button onClick={() => setShowDiaryModal(true)}>
-                <BookOpen className="w-4 h-4 mr-2" />
-                일지 작성
-              </Button>
-            </div>
-            
-            {diaryEntries.length === 0 ? (
+            <h2 className="text-2xl font-bold text-gray-900">{t("analysis")}</h2>
+            {kpi.totalTrades === 0 ? (
               <Card>
                 <CardContent className="p-8 text-center">
                   <div className="text-gray-400 mb-4">
-                    <BookOpen className="w-12 h-12 mx-auto" />
+                    <BarChart3 className="w-12 h-12 mx-auto" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">작성된 일지가 없습니다</h3>
-                  <p className="text-gray-500 mb-4">매매 경험과 학습 내용을 기록해보세요</p>
-                  <Button onClick={() => setShowDiaryModal(true)}>
-                    <BookOpen className="w-4 h-4 mr-2" />
-                    첫 번째 일지 작성하기
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t("noAnalysisData")}</h3>
+                  <p className="text-gray-500 mb-4">{t("noAnalysisDesc")}</p>
+                  <Button onClick={() => setActiveTab('trades')}>
+                    {t("addFirstTrade")}
                   </Button>
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4">
-                {diaryEntries
-                  .sort((a, b) => new Date(b.date) - new Date(a.date))
-                  .map((entry) => (
-                    <Card key={entry.id} className="hover:shadow-md transition-shadow">
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2 mb-2">
-                              <h3 className="text-lg font-semibold">{entry.title}</h3>
-                              <Badge variant="outline">{entry.category}</Badge>
-                            </div>
-                            <p className="text-gray-600 mb-3">
-                              {entry.content.length > 200 
-                                ? entry.content.substring(0, 200) + '...' 
-                                : entry.content
-                              }
-                            </p>
-                            <div className="flex items-center justify-between text-sm text-gray-500">
-                              <span>{entry.date}</span>
-                              {entry.keywords && entry.keywords.length > 0 && (
-                                <div className="flex flex-wrap gap-1">
-                                  {(Array.isArray(entry.keywords) ? entry.keywords : [entry.keywords])
-                                    .slice(0, 3)
-                                    .map((keyword, index) => (
-                                      <span key={index} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
-                                        {keyword}
-                                      </span>
-                                    ))
-                                  }
-                                  {Array.isArray(entry.keywords) && entry.keywords.length > 3 && (
-                                    <span className="text-gray-400 text-xs">+{entry.keywords.length - 3}</span>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
-                }
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* PnL Over Time Chart */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t("cumulativePnl")}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {/* Chart will go here */}
+                    <div className="h-64 bg-gray-100 rounded flex items-center justify-center text-gray-500">
+                      {t("chartPlaceholder")}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Win Rate Chart */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t("winRate")}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {/* Chart will go here */}
+                    <div className="h-64 bg-gray-100 rounded flex items-center justify-center text-gray-500">
+                      {t("chartPlaceholder")}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Trade Distribution by Type */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t("tradeDistribution")}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {/* Chart will go here */}
+                    <div className="h-64 bg-gray-100 rounded flex items-center justify-center text-gray-500">
+                      {t("chartPlaceholder")}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* PnL by Symbol */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t("pnlBySymbol")}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {/* Chart will go here */}
+                    <div className="h-64 bg-gray-100 rounded flex items-center justify-center text-gray-500">
+                      {t("chartPlaceholder")}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             )}
           </div>
         )}
+
+        {showAddAlertModal && (
+          <AddAlertModal
+            isOpen={showAddAlertModal}
+            onClose={() => setShowAddAlertModal(false)}
+            onAddAlert={addAlert}
+            coinPrices={coinPrices}
+          />
+        )}
+
+        {showAddTradeModal && (
+          <AddTradeModalV2
+            isOpen={showAddTradeModal}
+            onClose={() => setShowAddTradeModal(false)}
+            onAddTrade={addTrade}
+          />
+        )}
+
+        {showDiaryModal && (
+          <DiaryModal
+            isOpen={showDiaryModal}
+            onClose={() => setShowDiaryModal(false)}
+            onSaveDiary={saveDiary}
+            diaryEntries={diaryEntries}
+          />
+        )}
       </main>
-
-      {/* Add Alert Modal */}
-      <AddAlertModal
-        isOpen={showAddAlertModal}
-        onClose={() => setShowAddAlertModal(false)}
-        coinPrices={coinPrices}
-        onAddAlert={addAlert}
-      />
-
-      {/* Add Trade Modal V2 */}
-      <AddTradeModalV2
-        isOpen={showAddTradeModal}
-        onClose={() => setShowAddTradeModal(false)}
-        onAddTrade={addTrade}
-      />
-
-      {/* Diary Modal */}
-      <DiaryModal
-        isOpen={showDiaryModal}
-        onClose={() => setShowDiaryModal(false)}
-        onSaveDiary={saveDiary}
-        diaryEntries={diaryEntries}
-      />
-
-      {/* Mobile Action Bar */}
-      <div className="fixed inset-x-0 bottom-0 z-[60] md:hidden pointer-events-none">
-        <div className="mx-auto max-w-7xl px-4 pb-[env(safe-area-inset-bottom)]">
-          <div className="mb-3 rounded-2xl bg-white/95 border border-slate-200 shadow-lg backdrop-blur pointer-events-auto">
-            <div className="flex items-center justify-around p-3">
-              <button 
-                type="button"
-                id="btn-alarm" 
-                className="px-4 py-2 text-sm rounded-xl border border-slate-300 hover:bg-slate-50 transition-colors"
-                onClick={() => setShowAddAlertModal(true)}
-              >
-                {t('alertSettings')}
-              </button>
-              <button 
-                type="button"
-                id="btn-addtrade" 
-                className="px-4 py-2 text-sm rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors"
-                onClick={() => setShowAddTradeModal(true)}
-              >
-                {t('addTrade')}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AppFooter />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
+
 
