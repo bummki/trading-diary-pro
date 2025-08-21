@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.j
 import { Badge } from '@/components/ui/badge.jsx'
 import { Bell, Settings, Globe, TrendingUp, TrendingDown, BarChart3, RefreshCw, Plus, Trash2, Power, PowerOff, BookOpen } from 'lucide-react'
 import { useCoinPrices } from './hooks/useCoinPrices'
+import { useBinanceAPI } from './hooks/useBinanceAPI'
 import { useAlerts } from './hooks/useAlerts'
 import { useLanguage } from './hooks/useLanguage'
 import { useKPI } from './hooks/useKPI'
@@ -21,7 +22,18 @@ function App() {
   const [showDiaryModal, setShowDiaryModal] = useState(false)
   const [trades, setTrades] = useState([])
   const [diaryEntries, setDiaryEntries] = useState([])
-  const { coinPrices, loading, error, lastUpdated, refreshPrices } = useCoinPrices()
+  const { coinPrices, loading, error, lastUpdated, refreshPrices, getBinanceSymbol, getTickerBySymbol, getAllTickers } = useCoinPrices()
+  const { 
+    tickers: binanceTickers, 
+    loading: binanceLoading, 
+    error: binanceError, 
+    connectionStatus,
+    fetch24hrTicker,
+    getSymbolPrice,
+    getAllPrices,
+    refreshData: refreshBinanceData,
+    supportedSymbols 
+  } = useBinanceAPI()
   const { 
     alerts, 
     triggeredAlerts, 
