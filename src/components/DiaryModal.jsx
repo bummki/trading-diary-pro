@@ -3,8 +3,10 @@ import { X, Save, Download, Upload } from 'lucide-react';
 import { Button } from './ui/button';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import { useLanguage } from '../hooks/useLanguage';
 
 const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     date: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
     title: "",
@@ -42,12 +44,12 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
   };
 
   const categories = [
-    '매매전략',
-    '시장분석',
-    '학습노트',
-    '심리',
-    '리스크관리',
-    '기타'
+    { key: 'tradingStrategy', label: t('categories.tradingStrategy') },
+    { key: 'marketAnalysis', label: t('categories.marketAnalysis') },
+    { key: 'learningNote', label: t('categories.learningNote') },
+    { key: 'psychology', label: t('categories.psychology') },
+    { key: 'riskManagement', label: t('categories.riskManagement') },
+    { key: 'other', label: t('categories.other') }
   ];
 
   const handleInputChange = (field, value) => {
@@ -67,7 +69,7 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
     e.preventDefault();
     
     if (!formData.title || !formData.content) {
-      alert('제목과 내용은 필수 입력 항목입니다.');
+      alert(t('requiredFields'));
       return;
     }
 
@@ -110,7 +112,7 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
   };
 
   const handleDelete = (id) => {
-    if (confirm("정말로 이 일지를 삭제하시겠습니까?")) {
+    if (confirm(t('confirmDelete'))) {
       onSaveDiary(null, id); // null을 전달하여 삭제 표시
     }
   };
@@ -127,7 +129,7 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
         const headers = lines[0].split(',');
         
         if (headers.length < 7) {
-          alert('올바른 CSV 형식이 아닙니다.');
+          alert(t('invalidCsv'));
           return;
         }
 
@@ -161,12 +163,12 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
 
         if (importedEntries.length > 0) {
           importedEntries.forEach(entry => onSaveDiary(entry, null));
-          alert(`${importedEntries.length}개의 일지를 가져왔습니다.`);
+          alert(`${importedEntries.length}${t('importSuccess')}`);
         } else {
-          alert('가져올 새로운 일지가 없습니다.');
+          alert(t('noNewDiaries'));
         }
       } catch (error) {
-        alert('CSV 파일을 읽는 중 오류가 발생했습니다.');
+        alert(t('csvError'));
         console.error(error);
       }
     };
@@ -176,7 +178,7 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
 
   const exportToCSV = () => {
     if (diaryEntries.length === 0) {
-      alert('내보낼 일지가 없습니다.');
+      alert(t('noExportData'));
       return;
     }
 
@@ -211,17 +213,17 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto m-4">
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold">매매일지 작성</h2>
+          <h2 className="text-xl font-semibold">{t('diaryTitle')}</h2>
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="sm" onClick={exportToCSV}>
               <Download className="w-4 h-4 mr-2" />
-              내보내기
+              {t('export')}
             </Button>
             <label className="cursor-pointer">
               <Button variant="outline" size="sm" asChild>
                 <span>
                   <Upload className="w-4 h-4 mr-2" />
-                  가져오기
+                  {t('import')}
                 </span>
               </Button>
               <input
@@ -242,12 +244,12 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
             {/* 일지 작성 폼 */}
             <div>
               <h3 className="text-lg font-medium mb-4">
-                {editingId ? '일지 수정' : '새 일지 작성'}
+                {editingId ? t('editDiary') : t('newDiary')}
               </h3>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">날짜</label>
+                    <label className="block text-sm font-medium mb-2">{t('date')}</label>
                     <input
                       type="date"
                       value={formData.date}
@@ -257,24 +259,24 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">카테고리</label>
+                    <label className="block text-sm font-medium mb-2">{t('category')}</label>
                     <select
                       value={formData.category}
                       onChange={(e) => handleInputChange('category', e.target.value)}
                       className="w-full p-2 border rounded-lg"
                     >
                       {categories.map(category => (
-                        <option key={category} value={category}>{category}</option>
+                        <option key={category.key} value={category.label}>{category.label}</option>
                       ))}
                     </select>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">제목</label>
+                  <label className="block text-sm font-medium mb-2">{t('title')}</label>
                   <input
                     type="text"
-                    placeholder="일지 제목을 입력하세요"
+                    placeholder={t('titlePlaceholder')}
                     value={formData.title}
                     onChange={(e) => handleInputChange('title', e.target.value)}
                     className="w-full p-2 border rounded-lg"
@@ -283,9 +285,9 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">내용</label>
+                  <label className="block text-sm font-medium mb-2">{t('content')}</label>
                   <textarea
-                    placeholder="매매 경험, 학습 내용, 시장 분석 등을 자유롭게 작성하세요 (예: 삼성전자, 애플)"
+                    placeholder={t('contentPlaceholder')}
                     value={formData.content}
                     onChange={(e) => handleInputChange('content', e.target.value)}
                     className="w-full p-2 border rounded-lg h-40 resize-none"
@@ -294,7 +296,7 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">연결된 주식 종목</label>
+                  <label className="block text-sm font-medium mb-2">{t('linkedStocks')}</label>
                   <div className="flex flex-wrap gap-2 p-2 border rounded-lg bg-gray-50 min-h-[38px]">
                     {formData.linkedStocks && formData.linkedStocks.length > 0 ? (
                       formData.linkedStocks.map((stock, index) => (
@@ -303,16 +305,16 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
                         </span>
                       ))
                     ) : (
-                      <span className="text-sm text-gray-500">노트 내용에서 주식 종목을 자동으로 인식합니다.</span>
+                      <span className="text-sm text-gray-500">{t('linkedStocksDesc')}</span>
                     )}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">키워드 (쉼표로 구분)</label>
+                  <label className="block text-sm font-medium mb-2">{t('keywords')}</label>
                   <input
                     type="text"
-                    placeholder="예: 비트코인, 지지선, 돌파, 손절"
+                    placeholder={t('keywordsPlaceholder')}
                     value={formData.keywords}
                     onChange={(e) => handleInputChange('keywords', e.target.value)}
                     className="w-full p-2 border rounded-lg"
@@ -322,12 +324,12 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
                 <div className="flex gap-3">
                   {editingId && (
                     <Button type="button" variant="outline" onClick={resetForm} className="flex-1">
-                      취소
+                      {t('cancel')}
                     </Button>
                   )}
                   <Button type="submit" className="flex-1">
                     <Save className="w-4 h-4 mr-2" />
-                    {editingId ? '수정' : '저장'}
+                    {editingId ? t('edit') : t('save')}
                   </Button>
                 </div>
               </form>
@@ -335,12 +337,12 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
 
             {/* 일지 목록 */}
             <div>
-              <h3 className="text-lg font-medium mb-4">일지 목록 ({diaryEntries.length})</h3>
+              <h3 className="text-lg font-medium mb-4">{t('diaryList')} ({diaryEntries.length})</h3>
               <div className="space-y-3 max-h-96 overflow-y-auto">
                 {diaryEntries.length === 0 ? (
                   <div className="text-center text-gray-500 py-8">
-                    <p>작성된 일지가 없습니다.</p>
-                    <p className="text-sm">첫 번째 일지를 작성해보세요!</p>
+                    <p>{t('noDiaries')}</p>
+                    <p className="text-sm">{t('noDiariesDesc')}</p>
                   </div>
                 ) : (
                   diaryEntries
@@ -388,7 +390,7 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
                               onClick={() => handleEdit(entry)}
                               className="text-blue-600 hover:text-blue-800"
                             >
-                              수정
+                              {t('edit')}
                             </Button>
                             <Button
                               variant="ghost"
@@ -396,7 +398,7 @@ const DiaryModal = ({ isOpen, onClose, onSaveDiary, diaryEntries = [] }) => {
                               onClick={() => handleDelete(entry.id)}
                               className="text-red-600 hover:text-red-800"
                             >
-                              삭제
+                              {t('delete')}
                             </Button>
                           </div>
                         </div>

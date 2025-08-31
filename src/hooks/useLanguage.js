@@ -125,7 +125,46 @@ const resources = {
       
       // Analysis Page
       noAnalysisData: '분석 데이터가 없습니다',
-      noAnalysisDesc: '거래 데이터가 쌓이면 분석 결과를 확인할 수 있습니다'
+      noAnalysisDesc: '거래 데이터가 쌓이면 분석 결과를 확인할 수 있습니다',
+      
+      // Diary Modal
+      diaryTitle: '매매일지 작성',
+      export: '내보내기',
+      import: '가져오기',
+      newDiary: '새 일지 작성',
+      editDiary: '일지 수정',
+      date: '날짜',
+      category: '카테고리',
+      title: '제목',
+      titlePlaceholder: '일지 제목을 입력하세요',
+      content: '내용',
+      contentPlaceholder: '매매 경험, 학습 내용, 시장 분석 등을 자유롭게 작성하세요 (예: 삼성전자, 애플)',
+      linkedStocks: '연결된 주식 종목',
+      linkedStocksDesc: '노트 내용에서 주식 종목을 자동으로 인식합니다.',
+      keywords: '키워드 (쉼표로 구분)',
+      keywordsPlaceholder: '예: 비트코인, 지지선, 돌파, 손절',
+      save: '저장',
+      edit: '수정',
+      delete: '삭제',
+      diaryList: '일지 목록',
+      noDiaries: '작성된 일지가 없습니다.',
+      noDiariesDesc: '첫 번째 일지를 작성해보세요!',
+      confirmDelete: '정말로 이 일지를 삭제하시겠습니까?',
+      requiredFields: '제목과 내용은 필수 입력 항목입니다.',
+      exportSuccess: '개의 일지를 내보냈습니다.',
+      importSuccess: '개의 일지를 가져왔습니다.',
+      noNewDiaries: '가져올 새로운 일지가 없습니다.',
+      csvError: 'CSV 파일을 읽는 중 오류가 발생했습니다.',
+      invalidCsv: '올바른 CSV 형식이 아닙니다.',
+      noExportData: '내보낼 일지가 없습니다.',
+      categories: {
+        tradingStrategy: '매매전략',
+        marketAnalysis: '시장분석',
+        learningNote: '학습노트',
+        psychology: '심리',
+        riskManagement: '리스크관리',
+        other: '기타'
+      }
     }
   },
   
@@ -250,7 +289,46 @@ const resources = {
       
       // Analysis Page
       noAnalysisData: 'No analysis data',
-      noAnalysisDesc: 'Analysis results will be available once trading data accumulates'
+      noAnalysisDesc: 'Analysis results will be available once trading data accumulates',
+      
+      // Diary Modal
+      diaryTitle: 'Trading Diary',
+      export: 'Export',
+      import: 'Import',
+      newDiary: 'New Diary Entry',
+      editDiary: 'Edit Diary Entry',
+      date: 'Date',
+      category: 'Category',
+      title: 'Title',
+      titlePlaceholder: 'Enter diary title',
+      content: 'Content',
+      contentPlaceholder: 'Write about trading experience, learning, market analysis, etc. (e.g., Samsung Electronics, Apple)',
+      linkedStocks: 'Linked Stocks',
+      linkedStocksDesc: 'Stock symbols are automatically recognized from note content.',
+      keywords: 'Keywords (comma separated)',
+      keywordsPlaceholder: 'e.g., Bitcoin, support level, breakout, stop loss',
+      save: 'Save',
+      edit: 'Edit',
+      delete: 'Delete',
+      diaryList: 'Diary List',
+      noDiaries: 'No diary entries yet.',
+      noDiariesDesc: 'Create your first diary entry!',
+      confirmDelete: 'Are you sure you want to delete this diary entry?',
+      requiredFields: 'Title and content are required fields.',
+      exportSuccess: ' diary entries exported.',
+      importSuccess: ' diary entries imported.',
+      noNewDiaries: 'No new diary entries to import.',
+      csvError: 'Error occurred while reading CSV file.',
+      invalidCsv: 'Invalid CSV format.',
+      noExportData: 'No diary entries to export.',
+      categories: {
+        tradingStrategy: 'Trading Strategy',
+        marketAnalysis: 'Market Analysis',
+        learningNote: 'Learning Note',
+        psychology: 'Psychology',
+        riskManagement: 'Risk Management',
+        other: 'Other'
+      }
     }
   },
   
@@ -375,7 +453,46 @@ const resources = {
       
       // Analysis Page
       noAnalysisData: '无分析数据',
-      noAnalysisDesc: '交易数据积累后将显示分析结果'
+      noAnalysisDesc: '交易数据积累后将显示分析结果',
+      
+      // Diary Modal
+      diaryTitle: '交易日记',
+      export: '导出',
+      import: '导入',
+      newDiary: '新建日记',
+      editDiary: '编辑日记',
+      date: '日期',
+      category: '类别',
+      title: '标题',
+      titlePlaceholder: '请输入日记标题',
+      content: '内容',
+      contentPlaceholder: '自由记录交易经验、学习内容、市场分析等 (例如：三星电子、苹果)',
+      linkedStocks: '关联股票',
+      linkedStocksDesc: '从笔记内容中自动识别股票代码。',
+      keywords: '关键词 (逗号分隔)',
+      keywordsPlaceholder: '例如：比特币、支撑位、突破、止损',
+      save: '保存',
+      edit: '编辑',
+      delete: '删除',
+      diaryList: '日记列表',
+      noDiaries: '暂无日记记录。',
+      noDiariesDesc: '创建您的第一篇日记！',
+      confirmDelete: '确定要删除这篇日记吗？',
+      requiredFields: '标题和内容为必填项。',
+      exportSuccess: '篇日记已导出。',
+      importSuccess: '篇日记已导入。',
+      noNewDiaries: '没有新的日记可导入。',
+      csvError: '读取CSV文件时发生错误。',
+      invalidCsv: 'CSV格式无效。',
+      noExportData: '没有日记可导出。',
+      categories: {
+        tradingStrategy: '交易策略',
+        marketAnalysis: '市场分析',
+        learningNote: '学习笔记',
+        psychology: '心理',
+        riskManagement: '风险管理',
+        other: '其他'
+      }
     }
   },
   
@@ -499,7 +616,46 @@ const resources = {
       
       // Analysis Page
       noAnalysisData: '分析データがありません',
-      noAnalysisDesc: '取引データが蓄積されると分析結果を確認できます'
+      noAnalysisDesc: '取引データが蓄積されると分析結果を確認できます',
+      
+      // Diary Modal
+      diaryTitle: '取引日記',
+      export: 'エクスポート',
+      import: 'インポート',
+      newDiary: '新しい日記',
+      editDiary: '日記編集',
+      date: '日付',
+      category: 'カテゴリ',
+      title: 'タイトル',
+      titlePlaceholder: '日記のタイトルを入力してください',
+      content: '内容',
+      contentPlaceholder: '取引経験、学習内容、市場分析などを自由に記録してください（例：サムスン電子、アップル）',
+      linkedStocks: '関連株式',
+      linkedStocksDesc: 'ノート内容から株式銘柄を自動認識します。',
+      keywords: 'キーワード（カンマ区切り）',
+      keywordsPlaceholder: '例：ビットコイン、サポートライン、ブレイクアウト、ストップロス',
+      save: '保存',
+      edit: '編集',
+      delete: '削除',
+      diaryList: '日記一覧',
+      noDiaries: '日記がまだありません。',
+      noDiariesDesc: '最初の日記を作成してみましょう！',
+      confirmDelete: '本当にこの日記を削除しますか？',
+      requiredFields: 'タイトルと内容は必須項目です。',
+      exportSuccess: '件の日記をエクスポートしました。',
+      importSuccess: '件の日記をインポートしました。',
+      noNewDiaries: 'インポートする新しい日記がありません。',
+      csvError: 'CSVファイルの読み込み中にエラーが発生しました。',
+      invalidCsv: '正しいCSV形式ではありません。',
+      noExportData: 'エクスポートする日記がありません。',
+      categories: {
+        tradingStrategy: '取引戦略',
+        marketAnalysis: '市場分析',
+        learningNote: '学習ノート',
+        psychology: '心理',
+        riskManagement: 'リスク管理',
+        other: 'その他'
+      }
     }
   },
   
